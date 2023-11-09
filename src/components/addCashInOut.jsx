@@ -28,13 +28,11 @@ const addCashInOut = ({ title, open, handleClick, setTitle }) => {
     } = useForm()
 
     const onSubmit = ({ cash_in_out_date, amount, remark }) => {
+
         amount = amount.trim();
         remark = remark.trim();
-
         const data = { cash_in_out_date, amount, remark }
-
         console.log(data);
-
     }
 
     const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -45,6 +43,7 @@ const addCashInOut = ({ title, open, handleClick, setTitle }) => {
             padding: theme.spacing(1),
         },
     }));
+    
 
     return (
         <div>
@@ -72,7 +71,6 @@ const addCashInOut = ({ title, open, handleClick, setTitle }) => {
 
                 {/* Form Section */}
                 <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
-
                     {/* Dialog Content Section */}
                     <DialogContent dividers>
                         <div className='space-x-3'>
@@ -131,6 +129,7 @@ const addCashInOut = ({ title, open, handleClick, setTitle }) => {
                                     </DemoContainer>
                                 </LocalizationProvider>
                             </FormControl>
+
                             <FormControl sx={{ width: 160 }}>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DemoContainer
@@ -159,7 +158,6 @@ const addCashInOut = ({ title, open, handleClick, setTitle }) => {
                                     displayEmpty
                                     inputProps={{ 'aria-label': 'Without label' }}
                                     size='small'
-                                    
                                 >
                                     <MenuItem value={10}>Ten</MenuItem>
                                     <MenuItem value={20}>Twenty</MenuItem>
@@ -167,12 +165,14 @@ const addCashInOut = ({ title, open, handleClick, setTitle }) => {
                                 </Select>
                             </FormControl>
                         </div>
+
                         <div className='my-2'>
                             <FormControl sx={{ width: '100%' }}>
                                 <label htmlFor="" className='text-[13px]'>Remark</label>
                                 <OutlinedInput size="small" {...register("remark")} />
                             </FormControl>
                         </div>
+
                         <div>
                             <FormControl sx={{ width: 160 }}>
                                 <label htmlFor="" className='text-[13px]'>Payment Mode</label>
@@ -187,11 +187,9 @@ const addCashInOut = ({ title, open, handleClick, setTitle }) => {
                                 </Select>
                             </FormControl>
                         </div>
-                        <div className='text-gray-300 bg-green-600 mx-auto my-3 '>
-
-                        </div>
 
                     </DialogContent>
+
                     <DialogActions>
                         <Button variant='outlined' type='submit' className='!capitalize w-[120px]'>
                             Save
