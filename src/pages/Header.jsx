@@ -7,6 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { Avatar, Box, Button, Divider, Fade } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { Link } from "react-router-dom";
 
 const Header = () => {
 
@@ -65,17 +66,19 @@ const Header = () => {
                             onClose={handleClose}
                             TransitionComponent={Fade}
                         >
-                            <MenuItem onClick={handleClose} className='flex flex-row my-0 px-2'>
-                                <Avatar sx={{ width: '30px', height: '30px', marginRight: '10px' }} className='bg-gray-200'>U</Avatar>
-                                <div className='flex flex-col'>
-                                    <Typography sx={{ fontSize: '15px' }} className='text-black'>
-                                        UserName
-                                    </Typography>
-                                    <Typography sx={{ fontSize: '10px', textDecoration: 'underline' }} className='text-gray-500'>
-                                        Edit Profile
-                                    </Typography>
-                                </div>
-                            </MenuItem>
+                            <Link to="/Setting/UserProfile">
+                                <MenuItem onClick={handleClose} className='flex flex-row my-0 px-2'>
+                                    <Avatar sx={{ width: '30px', height: '30px', marginRight: '10px' }} className='bg-gray-200'>U</Avatar>
+                                    <div className='flex flex-col'>
+                                        <Typography sx={{ fontSize: '15px' }} className='text-black'>
+                                            UserName
+                                        </Typography>
+                                        <Typography sx={{ fontSize: '10px', textDecoration: 'underline' }} className='text-gray-500'>
+                                            Edit Profile
+                                        </Typography>
+                                    </div>
+                                </MenuItem>
+                            </Link>
                             <Divider class="m-0 px-2" />
                             <MenuItem onClick={handleClose}><LogoutIcon className='mr-4' /> Log out</MenuItem>
                         </Menu>

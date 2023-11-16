@@ -9,6 +9,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import { BiSearchAlt2 } from "react-icons/bi";
 import AddCashInOut from "../components/addCashInOut"
+import { Link } from "react-router-dom";
 
 function Home() {
 
@@ -24,13 +25,13 @@ function Home() {
     return (
         <div className="lg:container mx-auto mt-3">
             <div className="mx-3">
-                <div className="flex justify-between border-b-2 py-2">
-                    <Typography className="text-gray-600 text-lg">
+                <div className="flex justify-between border-b-[1px] py-2 border-gray-400">
+                    <Typography className="text-gray-600"  fontSize={25}>
                         Cash In/Out Record
                     </Typography>
-                    <Button  ripple="true" className="!rounded-xl">
-                        <SettingsIcon className="cursor-pointer text-gray-600" />
-                    </Button>
+                    <Link ripple="true" className="!rounded-xl" to="/Setting/Category">
+                        <SettingsIcon className="cursor-pointer text-gray-600 cursor-pointer" fontSize="large"/>
+                    </Link>
                 </div>
                 <div className="mt-7">
                     <CashInOutCard />

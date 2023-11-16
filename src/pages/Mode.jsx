@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import Snackbar from '@mui/material/Snackbar';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Button from '@mui/material/Button';
@@ -11,18 +12,18 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import validator from 'validator';
 import { baseUrl } from '../constant';
+import validator from 'validator';
 import Alert from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
 
-export default function Category() {
-  
-  const [categoryList, setCategoryList] = useState([]);
+
+export default function Mode() {
+
+  const [modeList, setModeList] = useState([]);
   const [validationText, setValidationText] = useState({});
-  const [categoryData, setCategoryData] = useState({
+  const [modeData, setModeData] = useState({
     id: '',
-    category: ''
+    mode: ''
   })
   const [isOpen, setOpen] = useState(false);
   const [isEdit, setEdit] = useState(false);
@@ -42,17 +43,17 @@ export default function Category() {
 
   async function getData() {
     try {
-      const response = await fetch(baseUrl + '/category');
-      setCategoryList(await response.json());
+      const response = await fetch(baseUrl + '/payment-mode');
+      setModeList(await response.json());
     } catch(err) {
       showAlert('Error in fetching data!', 'error');
-    }    
+    }
   }
 
   function validateForm() {
     const newErrors = {};
-      if(validator.isEmpty(categoryData.category.toString())) {
-          newErrors.category = 'Description is required.'
+      if(validator.isEmpty(modeData.mode.toString())) {
+          newErrors.mode = 'Description is required.'
       }
       setValidationText(newErrors);
       return Object.keys(newErrors).length === 0;
@@ -62,42 +63,44 @@ export default function Category() {
     if(validateForm()) {
       try {
         if(isEdit) {
-          const response = await fetch(baseUrl + '/category/edit/' + categoryData.id, {
+          const response = await fetch(baseUrl + '/payment-mode/edit/' + modeData.id, {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(categoryData)
+            body: JSON.stringify(modeData)
           })
           if(!response.ok) {
-            showAlert(isEdit ? 'Error in updating data!' : 'Error in saving data!', 'error');
+            showAlert('Error in updating data!', 'error');
             return;
           }
           showAlert('Data is updated successfully!', 'success');
         }
         else {
-          const response = await fetch(baseUrl + '/category/add', {
+          const response = await fetch(baseUrl + '/payment-mode/add', {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(categoryData)
+            body: JSON.stringify(modeData)
           })
           if(!response.ok) {
-            showAlert(isEdit ? 'Error in updating data!' : 'Error in saving data!', 'error');
+            showAlert('Error in saving data!', 'error');
             return;
           }
           showAlert('Data is saved successfully!', 'success');
         }
-        setCategoryData({
+
+        setModeData({
           id: '',
-          category: ''
-        });
+          mode: ''
+        })
         setOpen(isNew);
         setEdit(false);
         getData();
 
-      } catch(err) {
+      }
+      catch(err) {
         showAlert(isEdit ? 'Error in updating data!' : 'Error in saving data!', 'error');
       }
     }
@@ -105,24 +108,32 @@ export default function Category() {
 
   // async function handleSubmitNew() {
   //   if(validateForm()) {
-  //     await fetch(baseUrl + '/category/add', {
+  //     await fetch(baseUrl + '/payment-mode/add', {
   //       method: "POST",
   //       headers: {
   //         "Content-Type": "application/json",
   //       },
-  //       body: JSON.stringify(categoryData)
+  //       body: JSON.stringify(modeData)
   //     })
 
-  //     setCategoryData({
-  //       category: ''
-  //     });
+  //     setMessage('Data is saved successfully!');
+
+  //     setModeData({
+  //       mode: ''
+  //     })
   //     getData();
+
+  //     setToastOpen(true);
+  //     setTimeout(() => {
+  //       setToastOpen(false);
+  //     },2000)
+
   //   }
   // }
 
   async function handleDelete(id) {
     try {
-      const response = await fetch(baseUrl + '/category/delete/' + id, {
+      const response = await fetch(baseUrl + '/payment-mode/delete/' + id, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -135,21 +146,21 @@ export default function Category() {
 
       getData();
       showAlert('Data is deleted successfully!', 'success');
-
-    } catch(err) {
+    }
+    catch(err) {
       showAlert('Error in deleting data!', 'error');
     }
   }
 
   useEffect(() => {
     getData();
-  },[])
+  }, [])
 
   return (
     <div>
       <div className="flex pt-2">
         <Typography className="text-gray-600" fontSize="20px">
-            Category
+            Payment Mode
         </Typography>
       </div>
       <div className='py-5'>
@@ -160,26 +171,26 @@ export default function Category() {
           <div className='pr-2'>
             <AddIcon className="text-gray-600" />
           </div>
-          <p className='text-gray-600'>Add New Category</p>
+          <p className='text-gray-600'>Add New Mode</p>
         </div>
       </div>
-      <p className='text-gray-600 text-xs mb-2'>Categories({categoryList.length})</p>
+      <p className='text-gray-600 text-xs mb-2'>Payment Modes({modeList.length})</p>
       <div className='h-[500px] overflow-y-auto'>
         {
-          categoryList.map((rec, index) => {
+          modeList.map((rec, index) => {
             return (
               <div 
                 className='flex justify-between mb-3 py-2 px-5 border-[1px] border-gray-400 w-[400px]'
                 key={index}
               >
-                <p className='text-gray-600 pt-1'>{rec.category}</p>
+                <p className='text-gray-600 pt-1'>{rec.mode}</p>
                 <div className='flex'>
                   <IconButton onClick={() => {
                     setOpen(true);
                     setEdit(true);
-                    setCategoryData({
+                    setModeData({
                       id: rec._id,
-                      category: rec.category
+                      mode: rec.mode
                     })
                   }}>
                     <EditIcon className='text-info !w-[18px] !h-[18px] text-blue-600 cursor-pointer' />
@@ -204,7 +215,7 @@ export default function Category() {
           sx={{ m: 0, p: 2 }}
           id="customized-dialog-title"
         >
-          Add Category
+          Add Payment Mode
         </DialogTitle>
         <IconButton
             aria-label="close"
@@ -218,10 +229,10 @@ export default function Category() {
               setOpen(false);
               setEdit(false);
               setValidationText({});
-              setCategoryData({
+              setModeData({
                 id: '',
-                category: ''
-              });
+                mode: ''
+              })
             }}
         >
             <CloseIcon />
@@ -233,31 +244,31 @@ export default function Category() {
             aria-describedby="outlined-weight-helper-text"
             size='small'
             className="!pt-0 w-full"
-            placeholder='Add category'
-            value={categoryData.category}
+            placeholder='Add payment mode'
+            value={modeData.mode}
             onChange={(e) => {
-              setCategoryData({
-                ...categoryData,
-                category: e.target.value
-              });
-              setValidationText({})
+              setModeData({
+                ...modeData,
+                mode: e.target.value
+              })
             }}
           />
           {
-            validationText.category && <p className="block text-[12px] text-red-500 font-sans mb-2 text-right">{validationText.category}</p>
+            validationText.mode && <p className="block text-[12px] text-red-500 font-sans mb-2 text-right">{validationText.mode}</p>
           }
         </DialogContent>
         <DialogActions className='mr-2'>
-          <Button variant='outlined' className='!capitalize w-[120px]' onClick={() => handleSubmit(false)}>
+          <Button variant='outlined' type='submit' className='!capitalize w-[120px]' onClick={() => handleSubmit(false)}>
               Save
           </Button>
           {
             !isEdit ? (
-              <Button variant='contained' className='!capitalize' onClick={handleSubmit}>
+              <Button variant='contained' type='submit' className='!capitalize' onClick={handleSubmit}>
                 Save & New
               </Button>
             ) : null
           }
+          
         </DialogActions>
       </Dialog>
 
@@ -268,6 +279,8 @@ export default function Category() {
         <Alert severity={msgType} className='w-[300px]'>{message}</Alert>
       </Snackbar>
 
+      
+      
     </div>
   )
 }
