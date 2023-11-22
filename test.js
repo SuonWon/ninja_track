@@ -1,0 +1,2 @@
+// How to get the date format with (20 May, 2023 4:00 PM) from this json array:{"datetime": "2017-08-26T10:01:02.000Z"}
+// I wanna send these {datetime: '',amount: '',remark: '',paymentMode: '',cashType: '',category: ''} json object to api with axios in react JS?

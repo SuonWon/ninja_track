@@ -3,8 +3,9 @@ import { Grid, Typography } from '@mui/material'
 import { AiFillPlusCircle, AiFillMinusCircle } from "react-icons/ai";
 import { FaEquals } from "react-icons/fa";
 
+// how to separate the comma after three numbers?
+const CashInOutCard = ({total_cashIn, total_cashOut}) => {
 
-const CashInOutCard = () => {
     return (
         <>
             <Grid container sx={{ marginLeft: '0px', width: '100%' }} spacing={2} className="rounded-lg min-w-[900px] border-2 border-gray-200 flex flex-col h-100 py-3" >
@@ -15,7 +16,7 @@ const CashInOutCard = () => {
                             Cash In
                         </Typography>
                         <Typography className="pl-[73px] min-w-[333px] items-start">
-                            100,000,000
+                            {total_cashIn.toLocaleString('en-US')}
                         </Typography>
                     </div>
                 </Grid>
@@ -27,7 +28,7 @@ const CashInOutCard = () => {
                             Cash Out
                         </Typography>
                         <Typography className="pl-[73px] min-w-[333px] items-start">
-                            100,000,000
+                            {total_cashOut.toLocaleString('en-US')}
                         </Typography>
                     </div>
                 </Grid>

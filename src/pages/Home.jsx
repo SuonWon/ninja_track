@@ -1,50 +1,84 @@
-import { Button, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
+import { Button, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import SettingsIcon from '@mui/icons-material/Settings';
-import ListCashInOutRecord from "../pages/ListCashInOutRecord";
 import CashInOutCard from "../pages/CashInOutCard";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import { BiSearchAlt2 } from "react-icons/bi";
 import AddCashInOut from "../components/addCashInOut"
 import { Link } from "react-router-dom";
+import axios from "axios";
+import dayjs from "dayjs";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteDialog from '../components/deleteDialog';
 
 function Home() {
 
-    const [age, setAge] = useState('');
     const [open, setOpen] = useState(false);
+    const [deleteDiaOpen, setDeleteDiaOpen] = useState(false);
     const [title, setTitle] = useState("Add Cash Out");
-    const handleClick = () => {setOpen(!open);};
+    const [selectCashType, setSelectCashType] = useState("");
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [id, setId] = useState(null)
+    const [isEdit, setIsEdit] = useState(false)
 
-    const handleChange = (event) => {
-        setAge(event.target.value);
+    //! total cash in, total cash out & total net amount
+    let total_cashIn = 0;
+    let total_cashOut = 0;
+
+    data && data.map((item) => {
+        if (item.cashType === "DEBIT") {
+            total_cashIn += item.amount;
+
+        } else {
+            total_cashOut += item.amount;
+        }
+    })
+
+    //!Fetch The Traction list
+    const fetchDataList = async () => {
+        
+        axios.get('http://localhost:4000/api/transaction/')
+        .then(response => {
+            setData(response.data);
+            setLoading(false);
+        })
     };
+
+    useEffect(() => {
+        fetchDataList()
+    }, [])
+
+    if (loading) return <div>Loading ...</div>
+    if (error) return <div>Error: {error.message}</div>
 
     return (
         <div className="lg:container mx-auto mt-3">
             <div className="mx-3">
                 <div className="flex justify-between border-b-[1px] py-2 border-gray-400">
-                    <Typography className="text-gray-600"  fontSize={25}>
+                    <Typography className="text-gray-600" fontSize={25}>
                         Cash In/Out Record
                     </Typography>
                     <Link ripple="true" className="!rounded-xl" to="/Setting/Category">
-                        <SettingsIcon className="cursor-pointer text-gray-600 cursor-pointer" fontSize="large"/>
+                        <SettingsIcon className="text-gray-600 cursor-pointer" fontSize="large" />
                     </Link>
                 </div>
                 <div className="mt-7">
-                    <CashInOutCard />
+                    <CashInOutCard total_cashIn={total_cashIn} total_cashOut={total_cashOut} />
                 </div>
                 <div className="mb-4 p-0 mt-3 flex space-x-3 justify-between">
-                    <div className="flex space-x-3">
+                    {/* <div className="flex space-x-3">
                         <div>
                             <FormControl sx={{ minWidth: 200 }} size="small">
                                 <InputLabel>Duration</InputLabel>
                                 <Select
-                                    value={age}
+
                                     label="categories"
-                                    onChange={handleChange}
                                 >
                                     <MenuItem value="">
                                         <em>None</em>
@@ -59,9 +93,7 @@ function Home() {
                             <FormControl sx={{ minWidth: 200 }} size="small">
                                 <InputLabel>Categories</InputLabel>
                                 <Select
-                                    value={age}
                                     label="categories"
-                                    onChange={handleChange}
                                 >
                                     <MenuItem value="">
                                         <em>None</em>
@@ -91,26 +123,47 @@ function Home() {
                                 />
                             </FormControl>
                         </div>
-                    </div>
+                    </div> */}
                     <div className="flex space-x-1 xl:space-x-3 items-end justify-end min-w-[255px]">
-                        <Button 
-                            variant="contained" 
-                            color="success" 
-                            className="!px-5" 
-                            onClick={() => <>{setOpen(!open)} {setTitle("Add Cash In")}</>} 
-                            sx={{ textTransform: 'none' }} 
+                        <Button
+                            variant="contained"
+                            color="success"
+                            className="!px-5"
+                            onClick={() => {
+                                setOpen(!open)
+                                setTitle("Add Cash In")
+                                setSelectCashType("DEBIT")
+                            }}
+                            sx={{ textTransform: 'none' }}
                             startIcon={<AddIcon />}
                         >
                             Cash In
                         </Button>
-                        <AddCashInOut open={open} handleClick={handleClick} title={title} setTitle={setTitle} />
-                        <Button 
-                            variant="contained" 
-                            color="error" 
-                            className="!px-5" 
-                            sx={{ textTransform: 'none' }}  
-                            startIcon={<RemoveIcon />} 
-                            onClick={() => <>{setOpen(!open)} {setTitle("Add Cash Out")}</>}
+                        <AddCashInOut
+                            open={open}
+                            setOpen={setOpen}
+                            title={title}
+                            setTitle={setTitle}
+                            setSelectCashType={setSelectCashType}
+                            selectCashType={selectCashType}
+                            fetchDataList={fetchDataList}
+                            isEdit={isEdit}
+                            setIsEdit={setIsEdit}
+                            id={id}
+                            setId={setId}
+                        />
+
+                        <Button
+                            variant="contained"
+                            color="error"
+                            className="!px-5"
+                            sx={{ textTransform: 'none' }}
+                            startIcon={<RemoveIcon />}
+                            onClick={() => {
+                                setOpen(!open)
+                                setTitle("Add Cash Out")
+                                setSelectCashType("CREDIT")
+                            }}
                         >
                             Cash Out
                         </Button>
@@ -118,7 +171,108 @@ function Home() {
                 </div>
 
                 <div>
-                    <ListCashInOutRecord />
+                    <TableContainer component={Paper} sx={{ minWidth: 960 }} >
+                        <Table aria-label="simple table">
+                            <TableHead>
+                                <TableRow
+                                    style={{ 'backgroundColor': '#f5f5f5', padding: 0 }}
+                                >
+                                    <TableCell className="py-2 !text-gray-400">
+                                        Date & Time
+                                    </TableCell>
+                                    <TableCell align="left" className="!text-gray-400 py-2">
+                                        Remark
+                                    </TableCell>
+                                    <TableCell align="left" className="!text-gray-400 py-2">
+                                        Category
+                                    </TableCell>
+                                    <TableCell align="left" className="!text-gray-400 py-2">
+                                        Mode
+                                    </TableCell>
+                                    <TableCell align="left" className="!text-gray-400 py-2">
+                                        Amount
+                                    </TableCell>
+                                    <TableCell align="center" className="!text-gray-400 py-2">
+                                        Balance
+                                    </TableCell>
+                                    <TableCell align="right" className="py-2"></TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {
+                                    data ?
+                                        data.map((data, index) =>
+                                            <TableRow
+                                                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                                                key={index}
+                                            >
+                                                <TableCell align="left" sx={{ minWidth: 130 }} className="!py-1 !text-gray-500">
+                                                    {dayjs(data.datetime).format("DD MMM, YYYY")}<br />
+                                                    <span style={{ 'fontSize': '12px' }} className="text-muted">
+                                                        {dayjs(data.datetime).format("HH:mm A")}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell align="left" sx={{ minWidth: 220 }} className=" !py-1 !text-gray-500">
+                                                    {data.remark}
+                                                </TableCell>
+                                                <TableCell align="left" sx={{ minWidth: 150 }} className="!py-1 !text-gray-500">
+                                                    {data.category}
+                                                </TableCell>
+                                                <TableCell align="left" sx={{ minWidth: 100 }} className="!py-2 !text-gray-500">
+                                                    {data.paymentMode}
+                                                </TableCell>
+                                                <TableCell align="left" sx={{ minWidth: 120 }} className="!py-1 !text-gray-500">
+                                                    {data.amount}
+                                                </TableCell>
+                                                <TableCell align="center" sx={{ minWidth: 120 }} className="!py-1 !text-gray-500">
+                                                    50,000
+                                                </TableCell>
+                                                <TableCell align="right" sx={{ minWidth: 120 }} className="!py-1">
+                                                    <Tooltip title="Edit">
+                                                        <IconButton onClick={() => {
+                                                            setIsEdit(true)
+                                                            setOpen(!open)
+                                                            setId(data._id)
+                                                        }}>
+                                                            <EditIcon style={{ cursor: 'pointer' }} className='text-info !w-[18px] !h-[18px] text-blue-600' />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    <Tooltip title="Delete">
+                                                        <IconButton onClick={() => {
+                                                            setDeleteDiaOpen(!deleteDiaOpen)
+                                                            setId(data._id)
+                                                        }}>
+                                                            <DeleteIcon style={{ cursor: 'pointer' }} className='text-danger !w-[18px] !h-[18px] text-red-600' />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </TableCell>
+                                            </TableRow>
+                                        )
+                                        :
+                                        <TableRow
+                                            sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                                            className=' !text-gray-400 h-[45px]'
+                                        >
+                                            <TableCell
+                                                colSpan={7}
+                                                align='center'
+                                                className='!text-gray-400'
+                                            >
+                                                There is no Data
+                                            </TableCell>
+                                        </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+
+                    <DeleteDialog 
+                        deleteDiaOpen={deleteDiaOpen} 
+                        setDeleteDiaOpen={setDeleteDiaOpen} 
+                        fetchDataList={fetchDataList} 
+                        id={id} 
+                        setId={setId} 
+                    />
                 </div>
             </div>
         </div>
