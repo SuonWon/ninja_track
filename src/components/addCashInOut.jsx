@@ -15,9 +15,8 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelectCashType, isEdit, setIsEdit, id, setId}) => {
+const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelectCashType, isEdit, setIsEdit}) => {
 
-    console.log(id, isEdit);
     const [selectDate, setSelectDate] = useState(dayjs(new Date()));
     const [selectTime, setSelectTime] = useState(dayjs(new Date()));
     const [categoryList, setCategoryList] = useState([]);
@@ -31,18 +30,12 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
         category: ''
     })
     const [errors, setErrors] = useState({})
-    const [cashInOutDetail, setCashInOutDetail] = useState(formData);
 
     useEffect(() => {
 
         fetchCategoryList()
 
         fetchPaymentModeList()
-
-        if(isEdit){
-            alert("hello")
-            editCashInOut(id)
-        }
     },[])
 
     //! Format Date & Time
@@ -66,19 +59,6 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
             console.log('Error', error);
         })
     }
-
-     //! edit cash in out Detail
-    const editCashInOut = (id) =>{
-        if(!id) return
-        alert("HI")
-        axios.get(`http://localhost:4000/api/transaction/${id}`)
-        .then((response) => setCashInOutDetail(response.data))
-        .catch(error => { console.log('Error:', error); });
-        setIsEdit(false)
-        setId(null)
-    }
-
-    console.log(cashInOutDetail);
 
     //! Form Data validation
     const validateForm = ()=>{

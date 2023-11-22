@@ -14,10 +14,6 @@ function Setting() {
   let {type} = useParams()
   const [selectedPage, setSelectedPage] = useState(type);
 
-  useEffect(() => {
-    checkUser();
-  }, [])
-
   return (
     <div className="lg:container mx-auto mt-3 h-[80vh]">
       <div className="mx-3">

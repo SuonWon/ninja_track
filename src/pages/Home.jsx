@@ -26,6 +26,7 @@ function Home() {
     const [error, setError] = useState(null);
     const [id, setId] = useState(null)
     const [isEdit, setIsEdit] = useState(false)
+    const [cashInOutDetail, setCashInOutDetail] = useState({});
 
     //! total cash in, total cash out & total net amount
     let total_cashIn = 0;
@@ -49,6 +50,16 @@ function Home() {
             setLoading(false);
         })
     };
+
+    //! Fetch the Cash In Out Detail
+    // const getDetail = (id) => {
+    //     if(!id) return
+    //     axios.get(`http://localhost:4000/api/transaction/${id}`)
+    //     .then((response) => setCashInOutDetail(response.data))
+    //     .catch(error => { console.log('Error:', error); });
+    // }
+
+    // console.log("Hello");
 
     useEffect(() => {
         fetchDataList()
@@ -232,7 +243,7 @@ function Home() {
                                                         <IconButton onClick={() => {
                                                             setIsEdit(true)
                                                             setOpen(!open)
-                                                            setId(data._id)
+                                                            
                                                         }}>
                                                             <EditIcon style={{ cursor: 'pointer' }} className='text-info !w-[18px] !h-[18px] text-blue-600' />
                                                         </IconButton>
