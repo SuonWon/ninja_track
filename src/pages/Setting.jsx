@@ -2,18 +2,24 @@ import { Button, FormControl, InputLabel, MenuItem, Select, Typography } from "@
 import SettingsIcon from '@mui/icons-material/Settings';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Mode from "./Mode";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Category from "./Category";
 import UserProfile from "./UserProfile";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 function Setting() {
+
+  const navigate = useNavigate();
 
   let {type} = useParams()
   const [selectedPage, setSelectedPage] = useState(type);
 
+  useEffect(() => {
+    checkUser();
+  }, [])
+
   return (
-    <div className="lg:container mx-auto mt-3">
+    <div className="lg:container mx-auto mt-3 h-[80vh]">
       <div className="mx-3">
         <div className="flex border-b-[1px] py-2 border-gray-400">
           <Link ripple="true" className="!rounded-xl pr-2" to="/">
@@ -24,7 +30,7 @@ function Setting() {
           </Typography>
         </div>
       </div>
-      <div className="grid grid-cols-5 gap-4 mx-3 h-[680px]">
+      <div className="grid grid-cols-5 gap-4 mx-3">
         <div className="border-r-[1px] border-gray-400">
           <div 
             className="py-4 border-b-[1px] border-gray-400 pl-2 cursor-pointer"

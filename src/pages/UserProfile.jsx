@@ -15,6 +15,7 @@ import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import localforage from 'localforage';
 
 export default function UserProfile() {
 
@@ -43,7 +44,9 @@ export default function UserProfile() {
 
   async function getUser() {
     try {
-      const response = await fetch(baseUrl + '/user/' + loginId);
+      const data = await localforage.getItem('data');
+      console.log(data);
+      const response = await fetch(baseUrl + '/user/' + data._id);
       setUserData(await response.json());
 
     }catch(err) {
@@ -78,6 +81,7 @@ export default function UserProfile() {
   async function updateProfile() {
     if(validateForm()) {
       try {
+
         const response = await fetch(baseUrl + '/user/edit/' + userData._id, {
           method: "PUT",
           headers: {
@@ -130,6 +134,7 @@ export default function UserProfile() {
 
   useEffect(() => {
     getUser();
+    
   },[])
   
   return (
