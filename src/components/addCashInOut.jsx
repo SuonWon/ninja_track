@@ -15,7 +15,9 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelectCashType, isEdit, setIsEdit}) => {
+const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelectCashType, isEdit, setIsEdit, cashInOutDetail}) => {
+
+    console.log(cashInOutDetail);
 
     const [selectDate, setSelectDate] = useState(dayjs(new Date()));
     const [selectTime, setSelectTime] = useState(dayjs(new Date()));

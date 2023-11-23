@@ -23,7 +23,7 @@ const App = () => {
 
   useEffect(() => {
     checkUser();
-  })
+  },[])
 
   return (
     <div className="min-w-[1040px]">
