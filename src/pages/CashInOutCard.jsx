@@ -16,7 +16,7 @@ const CashInOutCard = ({total_cashIn, total_cashOut}) => {
                             Cash In
                         </Typography>
                         <Typography className="pl-[73px] min-w-[333px] items-start">
-                            {/* {total_cashIn.toLocaleString('en-US')} */}
+                            {total_cashIn.toLocaleString('en-US')}
                         </Typography>
                     </div>
                 </Grid>
@@ -28,7 +28,7 @@ const CashInOutCard = ({total_cashIn, total_cashOut}) => {
                             Cash Out
                         </Typography>
                         <Typography className="pl-[73px] min-w-[333px] items-start">
-                            {/* {total_cashOut.toLocaleString('en-US')} */}
+                            {total_cashOut.toLocaleString('en-US')}
                         </Typography>
                     </div>
                 </Grid>

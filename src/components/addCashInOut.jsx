@@ -15,9 +15,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelectCashType, isEdit, setIsEdit, cashInOutDetail}) => {
-
-    console.log(cashInOutDetail);
+const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelectCashType}) => {
 
     const [selectDate, setSelectDate] = useState(dayjs(new Date()));
     const [selectTime, setSelectTime] = useState(dayjs(new Date()));
@@ -104,9 +102,6 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
 
     //! Submit the formData to create the new transaction
     const handleSubmit = (isSave) => {
-
-        console.log({...formData, datetime: date + time, cashType: selectCashType});
-        console.log(isSave);
 
         if(validateForm()) {
             axios.post('http://localhost:4000/api/transaction/add/', {...formData, datetime: date + time, cashType: selectCashType})

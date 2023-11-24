@@ -1,12 +1,9 @@
-import { Button, FormControl, IconButton, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
+import { Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CashInOutCard from "../pages/CashInOutCard";
-import { useEffect, useMemo, useState } from "react";
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputAdornment from '@mui/material/InputAdornment';
-import { BiSearchAlt2 } from "react-icons/bi";
+import { useEffect, useState } from "react";
 import AddCashInOut from "../components/addCashInOut"
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -14,19 +11,19 @@ import dayjs from "dayjs";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteDialog from '../components/deleteDialog';
+import EditCashInOut from "../components/EditCashInOut";
 
 function Home() {
 
     const [open, setOpen] = useState(false);
     const [deleteDiaOpen, setDeleteDiaOpen] = useState(false);
+    const [editDiaOpen, setEditDiaOpen] = useState(false);
     const [title, setTitle] = useState("Add Cash Out");
     const [selectCashType, setSelectCashType] = useState("");
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [id, setId] = useState(null)
     const [isEdit, setIsEdit] = useState(false)
-    const [cashInOutDetail, setCashInOutDetail] = useState({});
 
     //! total cash in, total cash out & total net amount
     let total_cashIn = 0;
@@ -51,25 +48,11 @@ function Home() {
         })
     };
 
-    //! Fetch the Cash In Out Detail
-    const getDetail = (id) => {
-        if(!id) return
-        axios.get(`http://localhost:4000/api/transaction/${id}`)
-        .then((response) => setCashInOutDetail(response.data))
-        .catch(error => { console.log('Error:', error); });
-        setId(null)
-    }
-
-    console.log("Hello");
-
-    console.log(cashInOutDetail);
-
     useEffect(() => {
         fetchDataList()
     }, [])
 
     if (loading) return <div>Loading ...</div>
-    if (error) return <div>Error: {error.message}</div>
 
     return (
         <div className="lg:container mx-auto mt-3">
@@ -83,7 +66,7 @@ function Home() {
                     </Link>
                 </div>
                 <div className="mt-7">
-                    <CashInOutCard total_cashIn={total_cashIn} total_cashOut={total_cashOut} />
+                    <CashInOutCard total_cashIn={total_cashIn}  total_cashOut={total_cashOut} />
                 </div>
                 <div className="mb-4 p-0 mt-3 flex space-x-3 justify-between">
                     {/* <div className="flex space-x-3">
@@ -163,7 +146,6 @@ function Home() {
                             fetchDataList={fetchDataList}
                             isEdit={isEdit}
                             setIsEdit={setIsEdit}
-                            cashInOutDetail={cashInOutDetail}
                         />
 
                         <Button
@@ -243,9 +225,8 @@ function Home() {
                                                 <TableCell align="right" sx={{ minWidth: 120 }} className="!py-1">
                                                     <Tooltip title="Edit">
                                                         <IconButton onClick={() => {
-                                                            setIsEdit(true)
-                                                            setOpen(!open)
-                                                            getDetail(data._id)
+                                                            setEditDiaOpen(!editDiaOpen)
+                                                            setId(data._id)
                                                         }}>
                                                             <EditIcon style={{ cursor: 'pointer' }} className='text-info !w-[18px] !h-[18px] text-blue-600' />
                                                         </IconButton>
@@ -278,6 +259,13 @@ function Home() {
                             </TableBody>
                         </Table>
                     </TableContainer>
+
+                    <EditCashInOut
+                        editDiaOpen={editDiaOpen}
+                        setEditDiaOpen={setEditDiaOpen}
+                        fetchDataList={fetchDataList}
+                        id={id}
+                    />
 
                     <DeleteDialog 
                         deleteDiaOpen={deleteDiaOpen} 
