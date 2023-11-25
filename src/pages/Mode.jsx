@@ -15,7 +15,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import { baseUrl } from '../constant';
 import validator from 'validator';
 import Alert from '@mui/material/Alert';
-
+import localforage from 'localforage';
 
 export default function Mode() {
 
@@ -30,6 +30,7 @@ export default function Mode() {
   const [toastOpen, setToastOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [msgType, setMsgType] = useState('success');
+  const [user, setUser] = useState({});
 
   function showAlert(message, type) {
     setMessage(message);
@@ -43,10 +44,14 @@ export default function Mode() {
 
   async function getData() {
     try {
-      const response = await fetch(baseUrl + '/payment-mode');
+      const curUser = await localforage.getItem('data');
+      setUser(curUser);
+
+      const response = await fetch(baseUrl + '/payment-mode?user=' + curUser._id);
+
       setModeList(await response.json());
     } catch(err) {
-      showAlert('Error in fetching data!', 'error');
+      showAlert('Error in fetching dataaaa!', 'error');
     }
   }
 
@@ -77,12 +82,16 @@ export default function Mode() {
           showAlert('Data is updated successfully!', 'success');
         }
         else {
+          const data = {
+            ...modeData,
+            user: user._id
+          }
           const response = await fetch(baseUrl + '/payment-mode/add', {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(modeData)
+            body: JSON.stringify(data)
           })
           if(!response.ok) {
             showAlert('Error in saving data!', 'error');
@@ -140,7 +149,7 @@ export default function Mode() {
         },
       })
       if(!response.ok) {
-        showAlert('Error in deleting data!', 'error');
+        showAlert((await response.json()).error, 'error');
         return;
       }
 

@@ -12,12 +12,16 @@ const App = () => {
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   async function checkUser() {
+    setLoading(true);
     const data = await localforage.getItem('data');
     if(data == null) {
+      setLoading(false);
       navigate('/Login');
     }
+    setLoading(false);
     setUser(data);
   }
 
@@ -35,24 +39,29 @@ const App = () => {
         <Route path="/" element={
           <div>
             {
-              user != null || user != undefined ? (
-                <div>
-                  <Header />
-                  <Home />
-                </div>
-              ) : <Login/>
+              !loading ? (
+                user != null || user != undefined ? (
+                  <div>
+                    <Header />
+                    <Home />
+                  </div>
+                ) : <Login/>
+              ) : (<p>Loading...</p>)
             }
           </div>
         }></Route>
         <Route path="/Setting/:type" element={
           <div>
             {
-              user != null || user != undefined ? (
-                <div>
-                  <Header />
-                  <Setting />
-                </div>
-              ) : <Login/>
+              !loading ? (
+                user != null || user != undefined ? (
+                  <div>
+                    <Header />
+                    <Setting />
+                  </div>
+                ) : <Login/>
+              ) : (<p>Loading...</p>)
+              
             }
           </div>
         }></Route>

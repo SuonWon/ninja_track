@@ -15,6 +15,7 @@ import validator from 'validator';
 import { baseUrl } from '../constant';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
+import localforage from 'localforage';
 
 export default function Category() {
   
@@ -29,6 +30,7 @@ export default function Category() {
   const [toastOpen, setToastOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [msgType, setMsgType] = useState('success');
+  const [user, setUser] = useState({});
 
   function showAlert(message, type) {
     setMessage(message);
@@ -42,7 +44,10 @@ export default function Category() {
 
   async function getData() {
     try {
-      const response = await fetch(baseUrl + '/category');
+      const curUser = await localforage.getItem('data')
+      setUser(curUser);
+
+      const response = await fetch(baseUrl + '/category?user='+ curUser._id);
       setCategoryList(await response.json());
     } catch(err) {
       showAlert('Error in fetching data!', 'error');
@@ -76,12 +81,16 @@ export default function Category() {
           showAlert('Data is updated successfully!', 'success');
         }
         else {
+          const data = {
+            ...categoryData,
+            user: user._id
+          }
           const response = await fetch(baseUrl + '/category/add', {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(categoryData)
+            body: JSON.stringify(data)
           })
           if(!response.ok) {
             showAlert(isEdit ? 'Error in updating data!' : 'Error in saving data!', 'error');
@@ -103,23 +112,6 @@ export default function Category() {
     }
   }
 
-  // async function handleSubmitNew() {
-  //   if(validateForm()) {
-  //     await fetch(baseUrl + '/category/add', {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(categoryData)
-  //     })
-
-  //     setCategoryData({
-  //       category: ''
-  //     });
-  //     getData();
-  //   }
-  // }
-
   async function handleDelete(id) {
     try {
       const response = await fetch(baseUrl + '/category/delete/' + id, {
@@ -128,8 +120,9 @@ export default function Category() {
           "Content-Type": "application/json",
         },
       })
+
       if(!response.ok) {
-        showAlert('Error in deleting data!', 'error');
+        showAlert((await response.json()).error, 'error');
         return;
       }
 
@@ -137,13 +130,17 @@ export default function Category() {
       showAlert('Data is deleted successfully!', 'success');
 
     } catch(err) {
-      showAlert('Error in deleting data!', 'error');
+      showAlert(err.error, 'error');
     }
   }
 
+  async function getUser() {
+  }
+
   useEffect(() => {
+    
     getData();
-  },[])
+  },[user._id])
 
   return (
     <div>
@@ -260,6 +257,37 @@ export default function Category() {
           }
         </DialogActions>
       </Dialog>
+
+      {/* <Dialog
+        aria-labelledby="customized-dialog-title"
+        open={isDelete}
+      >
+        <DialogContent>
+            <Typography className="text-red-500">
+                Are you sure?
+            </Typography>
+        </DialogContent>
+
+        <DialogActions>
+            <Button 
+                variant='text' 
+                onClick={()=>{
+                    setIsDelete(!isDelete)
+                }} 
+                type='button' 
+                className='!capitalize w-[120px]'
+            >
+                Cancel
+            </Button>
+            <Button 
+                variant='contained' 
+                className='!capitalize !bg-red-500'
+                onClick={() => handleDelete(id)}
+            >
+                Delete
+            </Button>
+        </DialogActions>
+      </Dialog> */}
 
       <Snackbar
         anchorOrigin={{vertical: 'top', horizontal: 'right'}}

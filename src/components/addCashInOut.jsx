@@ -15,6 +15,8 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import localforage from 'localforage';
+import { baseUrl } from '../constant';
 const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelectCashType, fetchDataList}) => {
 
     const [selectDate, setSelectDate] = useState(dayjs(new Date()));
@@ -27,15 +29,16 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
         amount: '',
         paymentMode: '',
         cashType: '',
-        category: ''
+        category: '',
     })
-    const [errors, setErrors] = useState({})
+    const [errors, setErrors] = useState({});
+    const [user, setUser] = useState({});
 
     useEffect(() => {
+      
+        masterData()
 
-        fetchCategoryList()
-
-        fetchPaymentModeList()
+        //fetchPaymentModeList()
     },[])
 
     //! Format Date & Time
@@ -43,22 +46,27 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
     const time = dayjs(selectTime).format('HH:mm:ss');
 
     //! Fetch the Category Data List
-    const fetchCategoryList  = () => {
-        axios.get('http://localhost:4000/api/category/')
+    const masterData  = async () => {
+        const curUser = await localforage.getItem('data');
+        setUser(curUser);
+
+        axios.get(baseUrl + '/category?user=' + curUser._id)
         .then((response)=> setCategoryList(response.data) )
         .catch(error => {
             console.log('Error:', error);
         });
-    }
 
-     //! Fetch the Payment Mode List
-    const fetchPaymentModeList = () => {
-        axios.get('http://localhost:4000/api/payment-mode/')
+        axios.get(baseUrl + '/payment-mode?user=' + curUser._id)
         .then((response) => setPaymentModeList(response.data))
         .catch(error => {
             console.log('Error', error);
         })
     }
+
+    //  //! Fetch the Payment Mode List
+    // const fetchPaymentModeList = () => {
+        
+    // }
 
     //! Form Data validation
     const validateForm = ()=>{
@@ -89,7 +97,7 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
             remark: '',
             paymentMode: '',
             cashType: '',
-            category: ''
+            category: '',
         })
         setErrors({
             amountError: '',
@@ -102,9 +110,9 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
 
     //! Submit the formData to create the new transaction
     const handleSubmit = (isSave) => {
-
+        
         if(validateForm()) {
-            axios.post('http://localhost:4000/api/transaction/add/', {...formData, datetime: date + time, cashType: selectCashType})
+            axios.post('http://localhost:4000/api/transaction/add/', {...formData, datetime: date + time, cashType: selectCashType, user: user._id})
                 .then(()=>{
                     console.log('Create successfully')
                     fetchDataList()
@@ -323,6 +331,7 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
                                     )
                                 }
                             </FormControl>
+
                         </div>
                     </DialogContent>
 

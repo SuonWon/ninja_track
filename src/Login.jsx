@@ -29,6 +29,7 @@ export default function Login() {
   });
   const [signupData, setSignupData] = useState({
     username: '',
+    fullName: '',
     newPassword: '',
     confirmPassword: ''
   });
@@ -56,6 +57,9 @@ export default function Login() {
     if(validator.isEmpty(signupData.username.toString())) {
       newErrors.username = 'Username is required!'
     }
+    if(validator.isEmpty(signupData.fullName.toString())) {
+      newErrors.fullName = "Full name is required!"
+    }
     if(validator.isEmpty(signupData.newPassword.toString())) {
       newErrors.newPassword = 'New password is required!'
     }
@@ -79,12 +83,11 @@ export default function Login() {
           },
           body: JSON.stringify(loginData)
         })
-        const rec = await response.json();
         if(!response.ok) {
           showAlert(rec.error, 'error');
           return;
         }
-        console.log(rec);
+        const rec = await response.json();
         localforage.setItem('data', rec)
         showAlert('Login success!', 'success');
         navigate('/');
@@ -100,8 +103,10 @@ export default function Login() {
       try{
         const data = {
           username: signupData.username,
-          password: signupData.confirmPassword
+          password: signupData.confirmPassword,
+          fullName: signupData.fullName
         }
+
         const response = await fetch(baseUrl + '/signup', {
           method: "POST",
           headers: {
@@ -110,12 +115,13 @@ export default function Login() {
           body: JSON.stringify(data)
         })
 
-        const rec = await response.json();
         if(!response.ok) {
           showAlert(rec.error, 'error');
           return;
         }
-        localforage.setItem('data', rec)
+        const rec = await response.json();
+        console.log(rec._doc);
+        localforage.setItem('data', rec._doc)
         showAlert('User account is created!', 'success');
         navigate('/');
       }
@@ -212,6 +218,22 @@ export default function Login() {
                       />
                       {
                         signupValidationText.username && <p className="flex justify-end text-[12px] text-red-500 font-sans mb-2">{signupValidationText.username}</p>
+                      }
+                      <p className="text-gray-600">Full Name</p>
+                      <OutlinedInput
+                        aria-describedby="outlined-weight-helper-text"
+                        size='small'
+                        className="!pt-0 w-[300px] mb-3"
+                        placeholder='Add full name'
+                        onChange={(e) => {
+                          setSignupData({
+                            ...signupData,
+                            fullName: e.target.value
+                          })
+                        }}
+                      />
+                      {
+                        signupValidationText.fullName && <p className="flex justify-end text-[12px] text-red-500 font-sans mb-2">{signupValidationText.fullName}</p>
                       }
                       <p className="text-gray-600">New Password</p>
                       <OutlinedInput
