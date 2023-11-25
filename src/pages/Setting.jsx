@@ -5,11 +5,9 @@ import Mode from "./Mode";
 import { useEffect, useState } from "react";
 import Category from "./Category";
 import UserProfile from "./UserProfile";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 function Setting() {
-
-  const navigate = useNavigate();
 
   let {type} = useParams()
   const [selectedPage, setSelectedPage] = useState(type);

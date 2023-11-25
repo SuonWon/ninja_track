@@ -42,7 +42,7 @@ const CashInOutCard = ({total_cashIn, total_cashOut}) => {
                             Net Balance
                         </Typography>
                         <Typography className="pl-[72px] min-w-[333px] items-start">
-                            100,000,000
+                            {(total_cashIn - total_cashOut).toLocaleString('en-US')}
                         </Typography>
                     </div>
                 </Grid>

@@ -45,7 +45,7 @@ export default function UserProfile() {
   async function getUser() {
     try {
       const data = await localforage.getItem('data');
-      console.log(data);
+      
       const response = await fetch(baseUrl + '/user/' + data._id);
       setUserData(await response.json());
 
@@ -93,8 +93,11 @@ export default function UserProfile() {
           showAlert('Error in updating profile!', 'error');
           return;
         }
+        // const data = await response.json();
+        // console.log(data);
+        // await localforage.setItem('data', data.data);
+        // location.reload();
         showAlert('Profile is updated successfully!', 'success');
-        getUser();
       }
       catch(err) {
         showAlert('Error in updating profile!', 'error');

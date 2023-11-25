@@ -9,6 +9,7 @@ const DeleteDialog = ({ deleteDiaOpen, setDeleteDiaOpen, id, fetchDataList,setId
 
     const handleClick = async (id) =>{
         if(!id) return;
+        console.log(id);
 
         await axios.delete(`http://localhost:4000/api/transaction/delete/${id}`)
         .then((response)=> console.log(response.data.message))

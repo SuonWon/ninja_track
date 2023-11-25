@@ -12,6 +12,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteDialog from '../components/deleteDialog';
 import EditCashInOut from "../components/EditCashInOut";
+import { baseUrl } from "../constant";
+import localforage from "localforage";
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 function Home() {
 
@@ -24,7 +28,20 @@ function Home() {
     const [loading, setLoading] = useState(true);
     const [id, setId] = useState(null)
     const [isEdit, setIsEdit] = useState(false)
+    const [toastOpen, setToastOpen] = useState(false);
+    const [message, setMessage] = useState('');
+    const [msgType, setMsgType] = useState('success');
 
+    function showAlert(message, type) {
+        setMessage(message);
+        setMsgType(type);
+    
+        setToastOpen(true);
+        setTimeout(() => {
+          setToastOpen(false);
+        },3000)
+      }
+    
     //! total cash in, total cash out & total net amount
     let total_cashIn = 0;
     let total_cashOut = 0;
@@ -40,10 +57,26 @@ function Home() {
 
     //!Fetch The Traction list
     const fetchDataList = async () => {
-        
-        axios.get('http://localhost:4000/api/transaction/')
+        const user = await localforage.getItem('data');
+        const category = await fetch(baseUrl + '/category');
+
+        const mode = await fetch(baseUrl + '/payment-mode');
+
+        const categoryData = await category.json();
+        const modeData = await mode.json();
+
+        axios.get('http://localhost:4000/api/transaction?user=' + user._id)
         .then(response => {
-            setData(response.data);
+            const data = [];
+            response.data.map(rec => {
+                data.push({
+                    ...rec,
+                    category: categoryData.find(cat => cat._id == rec.category)?.category,
+                    paymentMode: modeData.find(mode => mode._id == rec.paymentMode)?.mode
+                })
+            })
+            console.log(data);
+            setData(data);
             setLoading(false);
         })
     };
@@ -187,9 +220,9 @@ function Home() {
                                     <TableCell align="left" className="!text-gray-400 py-2">
                                         Amount
                                     </TableCell>
-                                    <TableCell align="center" className="!text-gray-400 py-2">
+                                    {/* <TableCell align="center" className="!text-gray-400 py-2">
                                         Balance
-                                    </TableCell>
+                                    </TableCell> */}
                                     <TableCell align="right" className="py-2"></TableCell>
                                 </TableRow>
                             </TableHead>
@@ -219,9 +252,9 @@ function Home() {
                                                 <TableCell align="left" sx={{ minWidth: 120 }} className="!py-1 !text-gray-500">
                                                     {data.amount}
                                                 </TableCell>
-                                                <TableCell align="center" sx={{ minWidth: 120 }} className="!py-1 !text-gray-500">
+                                                {/* <TableCell align="center" sx={{ minWidth: 120 }} className="!py-1 !text-gray-500">
                                                     50,000
-                                                </TableCell>
+                                                </TableCell> */}
                                                 <TableCell align="right" sx={{ minWidth: 120 }} className="!py-1">
                                                     <Tooltip title="Edit">
                                                         <IconButton onClick={() => {
@@ -265,6 +298,7 @@ function Home() {
                         setEditDiaOpen={setEditDiaOpen}
                         fetchDataList={fetchDataList}
                         id={id}
+                        //categoryList={master.category.length == 0 ? master.category : []}
                     />
 
                     <DeleteDialog 
@@ -273,9 +307,16 @@ function Home() {
                         fetchDataList={fetchDataList} 
                         id={id} 
                         setId={setId} 
+                        //modeList={master.mode.length == 0 ? master.mode : []}
                     />
                 </div>
             </div>
+            <Snackbar
+                anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+                open={toastOpen}
+            >
+                <Alert severity={msgType} className='w-[300px]'>{message}</Alert>
+            </Snackbar>
         </div>
     );
 }
