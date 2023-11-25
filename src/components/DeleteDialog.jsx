@@ -12,9 +12,7 @@ const DeleteDialog = ({ deleteDiaOpen, setDeleteDiaOpen, id, fetchDataList,setId
 
         await axios.delete(`http://localhost:4000/api/transaction/delete/${id}`)
         .then((response)=> console.log(response.data.message))
-        useEffect(()=>{
-            fetchDataList();
-        },[])
+        fetchDataList()
         setDeleteDiaOpen(!deleteDiaOpen)
         setId(null)
     }
