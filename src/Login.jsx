@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
+import { Button, FormControl, InputLabel, MenuItem, Select, Typography,FormControlLabel } from "@mui/material";
 import OutlinedInput from '@mui/material/OutlinedInput';
 import validator from 'validator';
 import { baseUrl } from './constant';
@@ -7,6 +7,7 @@ import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import { useNavigate } from 'react-router-dom';
 import localforage from 'localforage';
+import Checkbox from '@mui/material/Checkbox';
 
 export default function Login() {
 
@@ -38,6 +39,10 @@ export default function Login() {
   const [toastOpen, setToastOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [msgType, setMsgType] = useState('success');
+  const [showPsd, setShowPsd] = useState({
+    login: false,
+    signup: false
+  })
 
   function validateLogin() {
     const newErrors = {};
@@ -83,12 +88,12 @@ export default function Login() {
           },
           body: JSON.stringify(loginData)
         })
+        const rec = await response.json();
         if(!response.ok) {
           showAlert(rec.error, 'error');
           return;
         }
-        const rec = await response.json();
-        localforage.setItem('data', rec)
+        await localforage.setItem('data', rec)
         showAlert('Login success!', 'success');
         navigate('/');
       }
@@ -115,13 +120,13 @@ export default function Login() {
           body: JSON.stringify(data)
         })
 
+        const rec = await response.json();
         if(!response.ok) {
           showAlert(rec.error, 'error');
           return;
         }
-        const rec = await response.json();
         console.log(rec._doc);
-        localforage.setItem('data', rec._doc)
+        await localforage.setItem('data', rec._doc)
         showAlert('User account is created!', 'success');
         navigate('/');
       }
@@ -169,7 +174,7 @@ export default function Login() {
                       }
                       <p className="text-gray-600 mt-3">Password</p>
                       <OutlinedInput
-                        type='password'
+                        type={showPsd.login ? 'text' : 'password'}
                         aria-describedby="outlined-weight-helper-text"
                         size='small'
                         className="!pt-0 w-[300px]"
@@ -184,6 +189,10 @@ export default function Login() {
                       {
                         loginValidationText.password && <p className="flex justify-end  text-[12px] text-red-500 font-sans mb-2">{loginValidationText.password}</p>
                       }
+                      <div >
+                        <FormControlLabel control={<Checkbox onChange={() => setShowPsd({...showPsd, login: !showPsd.login})} checked={showPsd.login}/>} label="Show password" />
+                      </div>
+                      
                       <div className='mt-4 flex justify-end'>
                         <Button variant='contained' className='!capitalize w-[120px]' onClick={handleLogin}>
                             Login
@@ -193,7 +202,7 @@ export default function Login() {
                         className='mt-10 flex justify-center cursor-pointer'
                         onClick={() => setIsLogin(false)}
                       >
-                        <Typography className='text-blue-800 ' fontWeight={500} fontSize={16}>Create Account.</Typography>
+                        <Typography className='text-blue-800 ' fontWeight={500} fontSize={16}>Create an account.</Typography>
                       </div>
                     </div>
                   </div>
@@ -237,7 +246,7 @@ export default function Login() {
                       }
                       <p className="text-gray-600">New Password</p>
                       <OutlinedInput
-                        type='password'
+                        type={showPsd.signup ? 'text' : 'password'}
                         aria-describedby="outlined-weight-helper-text"
                         size='small'
                         className="!pt-0 w-[300px] mb-3"
@@ -254,7 +263,7 @@ export default function Login() {
                       }
                       <p className="text-gray-600">Confirm Password</p>
                       <OutlinedInput
-                        type='password'
+                        type={showPsd.signup ? 'text' : 'password'}
                         aria-describedby="outlined-weight-helper-text"
                         size='small'
                         className="!pt-0 w-[300px]"
@@ -269,6 +278,9 @@ export default function Login() {
                       {
                         signupValidationText.confirmPassword && <p className="flex justify-end  text-[12px] text-red-500 font-sans mb-2">{signupValidationText.confirmPassword}</p>
                       }
+                      <div >
+                        <FormControlLabel control={<Checkbox onChange={() => setShowPsd({...showPsd, signup: !showPsd.signup})} checked={showPsd.signup}/>} label="Show password" />
+                      </div>
                       <div className='mt-4 flex justify-end'>
                         <Button variant='contained' className='!capitalize w-[120px]' onClick={handleSignup} >
                             Sign Up

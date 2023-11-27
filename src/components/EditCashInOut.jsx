@@ -15,6 +15,10 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { baseUrl } from '../constant';
+import localforage from 'localforage';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
 
     // How to user the fetching detail data and how to update with axios in react I request with id?
@@ -30,21 +34,50 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
         cashType: '',
         category: ''
     })
-    const [errors, setErrors] = useState({})
+    const [errors, setErrors] = useState({});
+    const [user, setUser] = useState({});
+    const [toastOpen, setToastOpen] = useState(false);
+    const [message, setMessage] = useState('');
+    const [msgType, setMsgType] = useState('success');
     let title = ''
 
+    function showAlert(message, type) {
+        setMessage(message);
+        setMsgType(type);
+    
+        setToastOpen(true);
+        setTimeout(() => {
+          setToastOpen(false);
+        },3000)
+      }
+    
     useEffect(() => {
-
-        fetchCategoryList()
-
-        fetchPaymentModeList()
+        masterData();
     },[])
+
+    //! Fetch the Category Data List
+    const masterData  = async () => {
+        const curUser = await localforage.getItem('data');
+        setUser(curUser);
+
+        axios.get(baseUrl + '/category?user=' + curUser._id)
+        .then((response)=> setCategoryList(response.data) )
+        .catch(error => {
+            console.log('Error:', error);
+        });
+
+        axios.get(baseUrl + '/payment-mode?user=' + curUser._id)
+        .then((response) => setPaymentModeList(response.data))
+        .catch(error => {
+            console.log('Error', error);
+        })
+    }
 
     useEffect(()=>{
         const fetchData = async () =>{
             if(!id) return;
             try{
-                const response = await axios.get(`http://localhost:4000/api/transaction/${id}`)
+                const response = await axios.get(`${baseUrl}/transaction/${id}`)
                 setFormData(response.data);
                 setSelectDate(dayjs(response.data.datetime))
                 setSelectTime(dayjs(response.data.datetime))
@@ -56,23 +89,6 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
         fetchData();
     },[id])
 
-    //! Fetch the Category Data List
-    const fetchCategoryList  = () => {
-        axios.get('http://localhost:4000/api/category/')
-        .then((response)=> setCategoryList(response.data) )
-        .catch(error => {
-            console.log('Error:', error);
-        });
-    }
-
-     //! Fetch the Payment Mode List
-    const fetchPaymentModeList = () => {
-        axios.get('http://localhost:4000/api/payment-mode/')
-        .then((response) => setPaymentModeList(response.data))
-        .catch(error => {
-            console.log('Error', error);
-        })
-    }
 
     //! Format Date & Time
     const date = dayjs(selectDate).format('YYYY-MM-DDT');
@@ -120,13 +136,14 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
     //! Submit Form 
     const handleSubmit = () => {
         if(validateForm()) {
-            axios.put(`http://localhost:4000/api/transaction/edit/${id}`, 
+            axios.put(`${baseUrl}/transaction/edit/${id}`, 
             {...formData, 
                 amount: String(formData.amount),
                 datetime: dayjs(selectDate).format('YYYY-MM-DDT') + dayjs(selectTime).format('HH:mm:ss')
             })
-                .then(()=>{
+                .then((response)=>{
                     console.log('Data update successfully')
+                    showAlert(response.data.message, 'success');
                     fetchDataList()
                 })
                 .catch(error => {
@@ -353,6 +370,12 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
                     </DialogActions>
                 </form>
             </Dialog>
+            <Snackbar
+                anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+                open={toastOpen}
+            >
+                <Alert severity={msgType} className='w-[300px]'>{message}</Alert>
+            </Snackbar>
         </div>
     )
 }

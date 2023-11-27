@@ -1,12 +1,26 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useState } from 'react';
+import { baseUrl } from '../constant';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const DeleteDialog = ({ deleteDiaOpen, setDeleteDiaOpen, id, fetchDataList,setId }) => {
     
+    const [toastOpen, setToastOpen] = useState(false);
+    const [message, setMessage] = useState('');
+    const [msgType, setMsgType] = useState('success');
 
+    function showAlert(message, type) {
+        setMessage(message);
+        setMsgType(type);
+    
+        setToastOpen(true);
+        setTimeout(() => {
+          setToastOpen(false);
+        },3000)
+      }
+    
     const handleClick = async (id) =>{
         if(!id) return;
         console.log(id);
@@ -19,37 +33,45 @@ const DeleteDialog = ({ deleteDiaOpen, setDeleteDiaOpen, id, fetchDataList,setId
     }
 
     return (
-        <Dialog
-        aria-labelledby="customized-dialog-title"
-        open={deleteDiaOpen}
-    >
-        <DialogContent>
-            <Typography className="text-red-500">
-                Are you sure?
-            </Typography>
-        </DialogContent>
+        <div>
+            <Dialog
+                aria-labelledby="customized-dialog-title"
+                open={deleteDiaOpen}
+            >
+                <DialogContent>
+                    <Typography className="text-red-500">
+                        Are you sure?
+                    </Typography>
+                </DialogContent>
 
-        <DialogActions>
-            <Button 
-                variant='text' 
-                onClick={()=>{
-                    setDeleteDiaOpen(!deleteDiaOpen)
-                    setId(null)
-                }} 
-                type='button' 
-                className='!capitalize w-[120px]'
+                <DialogActions>
+                    <Button 
+                        variant='text' 
+                        onClick={()=>{
+                            setDeleteDiaOpen(!deleteDiaOpen)
+                            setId(null)
+                        }} 
+                        type='button' 
+                        className='!capitalize w-[120px]'
+                    >
+                        Cancel
+                    </Button>
+                    <Button 
+                        variant='contained' 
+                        className='!capitalize !bg-red-500'
+                        onClick={() => handleClick(id)}
+                    >
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Snackbar
+                anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+                open={toastOpen}
             >
-                Cancel
-            </Button>
-            <Button 
-                variant='contained' 
-                className='!capitalize !bg-red-500'
-                onClick={() => handleClick(id)}
-            >
-                Delete
-            </Button>
-        </DialogActions>
-    </Dialog>
+                <Alert severity={msgType} className='w-[300px]'>{message}</Alert>
+            </Snackbar>
+        </div>
     )
 }
 

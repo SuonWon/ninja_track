@@ -49,7 +49,7 @@ const Header = () => {
     }, [])
 
     return (
-        <Box className='shadow-xs fixed-top'>
+        <Box className='shadow-xs sticky top-0'>
             <AppBar position="static">
             <Toolbar disableGutters sx={{ display: 'flex', justifyContent: 'space-between' }} className='m-0 p-0 bg-white px-5' >
                     <Typography

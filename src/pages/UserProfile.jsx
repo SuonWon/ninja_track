@@ -9,7 +9,7 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import { baseUrl, loginId } from '../constant';
+import { baseUrl } from '../constant';
 import validator from 'validator';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
@@ -97,7 +97,7 @@ export default function UserProfile() {
         // console.log(data);
         // await localforage.setItem('data', data.data);
         // location.reload();
-        showAlert('Profile is updated successfully!', 'success');
+        showAlert('Profile is updated successfully! For updating profile name, please login again.', 'success');
       }
       catch(err) {
         showAlert('Error in updating profile!', 'error');
