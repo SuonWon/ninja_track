@@ -1,4 +1,4 @@
-import { Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
+import { Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, FormControl, InputLabel, Select, MenuItem, OutlinedInput, InputAdornment } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -14,8 +14,7 @@ import DeleteDialog from '../components/deleteDialog';
 import EditCashInOut from "../components/EditCashInOut";
 import { baseUrl } from "../constant";
 import localforage from "localforage";
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
+import SearchIcon from '@mui/icons-material/Search';
 
 function Home() {
 
@@ -28,20 +27,15 @@ function Home() {
     const [loading, setLoading] = useState(true);
     const [id, setId] = useState(null)
     const [isEdit, setIsEdit] = useState(false)
-    const [toastOpen, setToastOpen] = useState(false);
-    const [message, setMessage] = useState('');
-    const [msgType, setMsgType] = useState('success');
+    const [formData, setFormData] = useState({
+        duration: 'AllTime',
+        category: 'All',
+        remark: '',
+    })
+    const [categoryList, setCategoryList] = useState([]);
+    const [paymentModeList, setPaymentModeList] = useState([])
+    const [user, setUser] = useState({});
 
-    function showAlert(message, type) {
-        setMessage(message);
-        setMsgType(type);
-    
-        setToastOpen(true);
-        setTimeout(() => {
-          setToastOpen(false);
-        },3000)
-      }
-    
     //! total cash in, total cash out & total net amount
     let total_cashIn = 0;
     let total_cashOut = 0;
@@ -56,23 +50,51 @@ function Home() {
     })
 
     //!Fetch The Traction list
-    const fetchDataList = async () => {
-        const user = await localforage.getItem('data');
-        const category = await fetch(baseUrl + '/category');
+    const fetchDataList = async (isNew = true, category = "All", duration = "AllTime", remark = '') => {
 
-        const mode = await fetch(baseUrl + '/payment-mode');
+        let userData = ""; let cat , paymentMode = [];
+        if(isNew) {
+            const user = await localforage.getItem('data');
+            const category = await fetch(baseUrl + '/category?user=' + user._id);
+    
+            const mode = await fetch(baseUrl + '/payment-mode?user=' + user._id);
+    
+            const categoryData = await category.json();
+            const modeData = await mode.json();
+    
+            setCategoryList(categoryData);
+            setUser(user);
+            setPaymentModeList(modeData);
 
-        const categoryData = await category.json();
-        const modeData = await mode.json();
+            userData = user
+            cat = categoryData;
+            paymentMode = modeData;
+        }
+        userData = isNew ? userData : user;
+        cat = isNew ? cat : categoryList;
+        paymentMode = isNew ? paymentMode : paymentModeList;
 
-        axios.get('http://localhost:4000/api/transaction?user=' + user._id)
+        console.log(duration);
+
+        let transactionUrl = baseUrl + '/transaction?user=' + userData._id;
+        if(category != "All") {
+            transactionUrl += '&category=' + category;
+        }
+        if(duration != "AllTime") {
+            transactionUrl += '&duration=' +duration;
+        }
+        if(remark != '') {
+            transactionUrl += '&remark=' + remark;
+        }
+
+        axios.get(transactionUrl)
         .then(response => {
             const data = [];
             response.data.map(rec => {
                 data.push({
                     ...rec,
-                    category: categoryData.find(cat => cat._id == rec.category)?.category,
-                    paymentMode: modeData.find(mode => mode._id == rec.paymentMode)?.mode
+                    category: cat.find(cat => cat._id == rec.category)?.category,
+                    paymentMode: paymentMode.find(mode => mode._id == rec.paymentMode)?.mode
                 })
             })
             console.log(data);
@@ -102,20 +124,27 @@ function Home() {
                     <CashInOutCard total_cashIn={total_cashIn}  total_cashOut={total_cashOut} />
                 </div>
                 <div className="mb-4 p-0 mt-3 flex space-x-3 justify-between">
-                    {/* <div className="flex space-x-3">
+                    <div className="flex space-x-3">
                         <div>
                             <FormControl sx={{ minWidth: 200 }} size="small">
                                 <InputLabel>Duration</InputLabel>
                                 <Select
-
-                                    label="categories"
+                                    value={formData.duration}
+                                    onChange={(e) => {
+                                        setFormData({
+                                            ...formData,
+                                            duration: e.target.value
+                                        })
+                                        fetchDataList(false, formData.category, e.target.value, formData.remark)
+                                    }}
                                 >
-                                    <MenuItem value="">
-                                        <em>None</em>
+                                    <MenuItem value="AllTime">
+                                        All Time
                                     </MenuItem>
-                                    <MenuItem value={10}>Ten</MenuItem>
-                                    <MenuItem value={20}>Twenty</MenuItem>
-                                    <MenuItem value={30}>Thirty</MenuItem>
+                                    <MenuItem value="Today">Today</MenuItem>
+                                    <MenuItem value="Yesterday">Yesterday</MenuItem>
+                                    <MenuItem value="ThisMonth">This Month</MenuItem>
+                                    <MenuItem value="LastMonth">Last Month</MenuItem>
                                 </Select>
                             </FormControl>
                         </div>
@@ -123,14 +152,29 @@ function Home() {
                             <FormControl sx={{ minWidth: 200 }} size="small">
                                 <InputLabel>Categories</InputLabel>
                                 <Select
-                                    label="categories"
+                                    displayEmpty
+                                    inputProps={{ 'aria-label': 'Without label' }}
+                                    size='small'
+                                    value={formData.category}
+                                    onChange={(event) => {
+                                        setFormData({
+                                            ...formData,
+                                            category: event.target.value
+                                        });
+                                        fetchDataList(false, event.target.value, formData.duration, formData.remark);
+                                    }}
                                 >
-                                    <MenuItem value="">
-                                        <em>None</em>
+                                    <MenuItem value="All">
+                                        All
                                     </MenuItem>
-                                    <MenuItem value={10}>Ten</MenuItem>
-                                    <MenuItem value={20}>Twenty</MenuItem>
-                                    <MenuItem value={30}>Thirty</MenuItem>
+                                    {
+                                        categoryList ? 
+                                        categoryList.map((value, index) => {
+                                            return (<MenuItem key={index} value={value._id}>{value.category}</MenuItem>)
+                                        })
+                                        :
+                                        <MenuItem value=''>There is no data.</MenuItem>
+                                    }
                                 </Select>
                             </FormControl>
                         </div>
@@ -140,9 +184,11 @@ function Home() {
                                     id="outlined-adornment-weight"
                                     endAdornment={
                                         <InputAdornment position="end">
-                                            <Button className="!rounded-xl" sx={{ width: '35px', height: '35px' }}>
-                                                <BiSearchAlt2 className="cursor-pointer w-[20px] h-[20px]" />
-                                            </Button>
+                                            {/* <Button className="!rounded-xl"> */}
+                                                <SearchIcon className="cursor-pointer hover:bg-gray-100" onClick={() => {
+                                                    fetchDataList(false, formData.category, formData.duration, formData.remark)
+                                                }}/>
+                                            {/* </Button> */}
                                         </InputAdornment>}
                                     aria-describedby="outlined-weight-helper-text"
                                     size="small"
@@ -150,10 +196,16 @@ function Home() {
                                     inputProps={{
                                         'aria-label': 'Search with Remark...',
                                     }}
+                                    onChange={(e) => {
+                                        setFormData({
+                                            ...formData,
+                                            remark: e.target.value
+                                        })
+                                    }}
                                 />
                             </FormControl>
                         </div>
-                    </div> */}
+                    </div>
                     <div className="flex space-x-1 xl:space-x-3 items-end justify-end min-w-[255px]">
                         <Button
                             variant="contained"
@@ -217,7 +269,7 @@ function Home() {
                                     <TableCell align="left" className="!text-gray-400 py-2">
                                         Mode
                                     </TableCell>
-                                    <TableCell align="left" className="!text-gray-400 py-2">
+                                    <TableCell align="right" className="!text-gray-400 py-2">
                                         Amount
                                     </TableCell>
                                     {/* <TableCell align="center" className="!text-gray-400 py-2">
@@ -249,7 +301,7 @@ function Home() {
                                                 <TableCell align="left" sx={{ minWidth: 100 }} className="!py-2 !text-gray-500">
                                                     {data.paymentMode}
                                                 </TableCell>
-                                                <TableCell align="left" sx={{ minWidth: 120 }} className="!py-1 !text-gray-500">
+                                                <TableCell align="right" sx={{ minWidth: 120 }} className="!py-1 !text-gray-500">
                                                     {data.amount}
                                                 </TableCell>
                                                 {/* <TableCell align="center" sx={{ minWidth: 120 }} className="!py-1 !text-gray-500">
@@ -311,12 +363,6 @@ function Home() {
                     />
                 </div>
             </div>
-            <Snackbar
-                anchorOrigin={{vertical: 'top', horizontal: 'right'}}
-                open={toastOpen}
-            >
-                <Alert severity={msgType} className='w-[300px]'>{message}</Alert>
-            </Snackbar>
         </div>
     );
 }

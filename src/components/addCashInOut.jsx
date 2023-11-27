@@ -17,6 +17,8 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import localforage from 'localforage';
 import { baseUrl } from '../constant';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelectCashType, fetchDataList}) => {
 
     const [selectDate, setSelectDate] = useState(dayjs(new Date()));
@@ -33,7 +35,20 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
     })
     const [errors, setErrors] = useState({});
     const [user, setUser] = useState({});
+    const [toastOpen, setToastOpen] = useState(false);
+    const [message, setMessage] = useState('');
+    const [msgType, setMsgType] = useState('success');
 
+    function showAlert(message, type) {
+        setMessage(message);
+        setMsgType(type);
+    
+        setToastOpen(true);
+        setTimeout(() => {
+          setToastOpen(false);
+        },3000)
+      }
+    
     useEffect(() => {
       
         masterData()
@@ -112,9 +127,10 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
     const handleSubmit = (isSave) => {
         
         if(validateForm()) {
-            axios.post('http://localhost:4000/api/transaction/add/', {...formData, datetime: date + time, cashType: selectCashType, user: user._id})
-                .then(()=>{
+            axios.post(baseUrl + '/transaction/add/', {...formData, datetime: date + time, cashType: selectCashType, user: user._id})
+                .then((response)=>{
                     console.log('Create successfully')
+                    showAlert(response.data.message, 'success');
                     fetchDataList()
                 })
                 .catch(error => {
@@ -358,6 +374,12 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
                     </DialogActions>
                 </form>
             </Dialog>
+            <Snackbar
+                anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+                open={toastOpen}
+            >
+                <Alert severity={msgType} className='w-[300px]'>{message}</Alert>
+            </Snackbar>
         </div>
     )
 }
