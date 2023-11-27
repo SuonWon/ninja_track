@@ -19,7 +19,7 @@ import { baseUrl } from '../constant';
 import localforage from 'localforage';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
+const EditCashInOut = ({ editDiaOpen, setEditDiaOpen, id, fetchDataList }) => {
 
     // How to user the fetching detail data and how to update with axios in react I request with id?
     const [selectDate, setSelectDate] = useState(dayjs(new Date()));
@@ -39,78 +39,77 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
     const [toastOpen, setToastOpen] = useState(false);
     const [message, setMessage] = useState('');
     const [msgType, setMsgType] = useState('success');
-    let title = ''
 
     function showAlert(message, type) {
         setMessage(message);
         setMsgType(type);
-    
+
         setToastOpen(true);
         setTimeout(() => {
-          setToastOpen(false);
-        },3000)
-      }
-    
+            setToastOpen(false);
+        }, 3000)
+    }
+
     useEffect(() => {
         masterData();
-    },[])
+    }, [])
 
     //! Fetch the Category Data List
-    const masterData  = async () => {
+    const masterData = async () => {
         const curUser = await localforage.getItem('data');
         setUser(curUser);
 
         axios.get(baseUrl + '/category?user=' + curUser._id)
-        .then((response)=> setCategoryList(response.data) )
-        .catch(error => {
-            console.log('Error:', error);
-        });
+            .then((response) => setCategoryList(response.data))
+            .catch(error => {
+                console.log('Error:', error);
+            });
 
         axios.get(baseUrl + '/payment-mode?user=' + curUser._id)
-        .then((response) => setPaymentModeList(response.data))
-        .catch(error => {
-            console.log('Error', error);
-        })
+            .then((response) => setPaymentModeList(response.data))
+            .catch(error => {
+                console.log('Error', error);
+            })
     }
 
-    useEffect(()=>{
-        const fetchData = async () =>{
-            if(!id) return;
-            try{
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!id) return;
+            try {
                 const response = await axios.get(`${baseUrl}/transaction/${id}`)
                 setFormData(response.data);
                 setSelectDate(dayjs(response.data.datetime))
                 setSelectTime(dayjs(response.data.datetime))
-            }catch(error){
+            } catch (error) {
                 console.log(error);
             }
         }
 
         fetchData();
-    },[id])
+    }, [id])
 
 
     //! Format Date & Time
     const date = dayjs(selectDate).format('YYYY-MM-DDT');
     const time = dayjs(selectTime).format('HH:mm:ss');
 
-    const validateForm = ()=>{
+    const validateForm = () => {
         let errors = {};
-        if(!formData.amount){
+        if (!formData.amount) {
             errors.amountError = "Amount is required";
-    
-        }else if (isNaN(Number(formData.amount))) {
+
+        } else if (isNaN(Number(formData.amount))) {
             errors.amountError = "Invalid Amount"
-    
-        }else if (!formData.category || formData.category === ''){
+
+        } else if (!formData.category) {
             errors.categoryError = 'Please Select a Category'
-    
-        }else if (!formData.paymentMode || formData.paymentMode === ''){
+
+        } else if (!formData.paymentMode) {
             errors.paymentModeError = 'Please Select Cash Type';
         }
-    
+
         setErrors(errors)
-    
+
         return Object.keys(errors).length > 0 ? false : true;
     };
 
@@ -135,13 +134,14 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
 
     //! Submit Form 
     const handleSubmit = () => {
-        if(validateForm()) {
-            axios.put(`${baseUrl}/transaction/edit/${id}`, 
-            {...formData, 
-                amount: String(formData.amount),
-                datetime: dayjs(selectDate).format('YYYY-MM-DDT') + dayjs(selectTime).format('HH:mm:ss')
-            })
-                .then((response)=>{
+        if (validateForm()) {
+            axios.put(`${baseUrl}/transaction/edit/${id}`,
+                {
+                    ...formData,
+                    amount: String(formData.amount),
+                    datetime: dayjs(selectDate).format('YYYY-MM-DDT') + dayjs(selectTime).format('HH:mm:ss')
+                })
+                .then((response) => {
                     console.log('Data update successfully')
                     showAlert(response.data.message, 'success');
                     fetchDataList()
@@ -153,7 +153,7 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
             setEditDiaOpen(!editDiaOpen)
         }
     }
-    
+
 
     return (
         <div>
@@ -165,7 +165,7 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
                     sx={{ m: 0, p: 2 }}
                     className={
                         formData.cashType === "DEBIT" ? "text-green-600" : "text-red-600"
-                        } 
+                    }
                     id="customized-dialog-title"
                 >
                     {formData.cashType === "DEBIT" ? "Edit Cash In" : "Edit Cash Out"}
@@ -178,7 +178,7 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
                         top: 8,
                         color: (theme) => theme.palette.grey[500],
                     }}
-                    onClick={()=>{
+                    onClick={() => {
                         setEditDiaOpen(!editDiaOpen)
                     }}
                 >
@@ -202,7 +202,7 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
                                         "!capitalize !rounded-[50px] !bg-white !text-gray-600 !shadow-none !border-gray-400"
                                 }
                                 onClick={() => {
-                                    setFormData({...formData, cashType: "DEBIT"})
+                                    setFormData({ ...formData, cashType: "DEBIT" })
                                 }}
                             >
                                 Cash In
@@ -215,7 +215,7 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
                                         "!capitalize !rounded-[50px] !bg-red-600"
                                 }
                                 onClick={() => {
-                                    setFormData({...formData, cashType: "CREDIT"})
+                                    setFormData({ ...formData, cashType: "CREDIT" })
                                 }}
                             >
                                 Cash Out
@@ -239,7 +239,7 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
                                                 defaultValue={selectDate}
                                                 value={selectDate}
                                                 onChange={(newValue) => setSelectDate(newValue)}
-                                                />
+                                            />
                                         </div>
                                     </DemoContainer>
                                 </LocalizationProvider>
@@ -297,12 +297,12 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
                                     })}
                                 >
                                     {
-                                        categoryList ? 
-                                        categoryList.map((value, index) => {
-                                            return (<MenuItem key={index} value={value._id}>{value.category}</MenuItem>)
-                                        })
-                                        :
-                                        <MenuItem value=''>There is no data.</MenuItem>
+                                        categoryList.length != 0 ?
+                                            categoryList.map((value, index) => {
+                                                return (<MenuItem key={index} value={value._id}>{value.category}</MenuItem>)
+                                            })
+                                            :
+                                            <MenuItem value={null} disabled>There is no data.</MenuItem>
                                     }
                                 </Select>
                                 {
@@ -317,11 +317,11 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
                             <FormControl sx={{ width: '100%' }}>
                                 <label htmlFor="" className='text-[13px]'>Remark</label>
                                 <OutlinedInput size="small"
-                                value={formData.remark}
-                                onChange={(event) => setFormData({
-                                    ...formData,
-                                    remark: event.target.value
-                                })}
+                                    value={formData.remark}
+                                    onChange={(event) => setFormData({
+                                        ...formData,
+                                        remark: event.target.value
+                                    })}
                                 />
                             </FormControl>
                         </div>
@@ -340,12 +340,12 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
                                     })}
                                 >
                                     {
-                                        paymentModeList ? 
-                                        paymentModeList.map((value, index) => (
-                                            <MenuItem key={index} value={value._id}>{value.mode}</MenuItem>
-                                        ))
-                                        :
-                                        <MenuItem value=''>There is no data.</MenuItem>
+                                        paymentModeList.length != 0 ?
+                                            paymentModeList.map((value, index) => (
+                                                <MenuItem key={index} value={value._id}>{value.mode}</MenuItem>
+                                            ))
+                                            :
+                                            <MenuItem value={null} disabled>There is no data.</MenuItem>
                                     }
                                 </Select>
                                 {
@@ -358,11 +358,11 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
                     </DialogContent>
 
                     <DialogActions>
-                        <Button 
-                            variant='contained' 
+                        <Button
+                            variant='contained'
                             onClick={() => {
                                 handleSubmit()
-                            }} 
+                            }}
                             className='!capitalize'
                         >
                             Update
@@ -371,7 +371,7 @@ const EditCashInOut = ({editDiaOpen, setEditDiaOpen, id, fetchDataList}) => {
                 </form>
             </Dialog>
             <Snackbar
-                anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                 open={toastOpen}
             >
                 <Alert severity={msgType} className='w-[300px]'>{message}</Alert>

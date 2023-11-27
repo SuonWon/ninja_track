@@ -45,12 +45,12 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
     
         setToastOpen(true);
         setTimeout(() => {
-          setToastOpen(false);
+        setToastOpen(false);
         },3000)
-      }
+    }
     
     useEffect(() => {
-      
+
         masterData()
 
         //fetchPaymentModeList()
@@ -78,11 +78,6 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
         })
     }
 
-    //  //! Fetch the Payment Mode List
-    // const fetchPaymentModeList = () => {
-        
-    // }
-
     //! Form Data validation
     const validateForm = ()=>{
         let errors = {};
@@ -92,10 +87,10 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
         }else if (isNaN(Number(formData.amount))) {
             errors.amountError = "Invalid Amount"
 
-        }else if (!formData.category || formData.category === ''){
+        }else if (!formData.category){
             errors.categoryError = 'Please Select a Category'
 
-        }else if (!formData.paymentMode || formData.paymentMode === ''){
+        }else if (!formData.paymentMode){
             errors.paymentModeError = 'Please Select Cash Type';
         }
 
@@ -290,12 +285,12 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
                                     })}
                                 >
                                     {
-                                        categoryList ? 
+                                        categoryList.length != 0 ? 
                                         categoryList.map((value, index) => {
                                             return (<MenuItem key={index} value={value._id}>{value.category}</MenuItem>)
                                         })
                                         :
-                                        <MenuItem value=''>There is no data.</MenuItem>
+                                        <MenuItem value={null} disabled>There is no data.</MenuItem>
                                     }
                                 </Select>
                                 {
@@ -333,12 +328,12 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
                                     })}
                                 >
                                     {
-                                        paymentModeList ? 
+                                        paymentModeList.length != 0 ? 
                                         paymentModeList.map((value, index) => (
                                             <MenuItem key={index} value={value._id}>{value.mode}</MenuItem>
                                         ))
                                         :
-                                        <MenuItem value=''>There is no data.</MenuItem>
+                                        <MenuItem value={null} disabled>There is no data.</MenuItem>
                                     }
                                 </Select>
                                 {

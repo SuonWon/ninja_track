@@ -15,7 +15,6 @@ import EditCashInOut from "../components/EditCashInOut";
 import { baseUrl } from "../constant";
 import localforage from "localforage";
 import SearchIcon from '@mui/icons-material/Search';
-
 function Home() {
 
     const [open, setOpen] = useState(false);
@@ -130,6 +129,7 @@ function Home() {
                                 <InputLabel>Duration</InputLabel>
                                 <Select
                                     value={formData.duration}
+                                    label="outlined"
                                     onChange={(e) => {
                                         setFormData({
                                             ...formData,
@@ -150,9 +150,9 @@ function Home() {
                         </div>
                         <div>
                             <FormControl sx={{ minWidth: 200 }} size="small">
-                                <InputLabel>Categories</InputLabel>
+                                <InputLabel>Category</InputLabel>
                                 <Select
-                                    displayEmpty
+                                    label="outlined"
                                     inputProps={{ 'aria-label': 'Without label' }}
                                     size='small'
                                     value={formData.category}
@@ -168,7 +168,7 @@ function Home() {
                                         All
                                     </MenuItem>
                                     {
-                                        categoryList ? 
+                                        categoryList.length != 0 ? 
                                         categoryList.map((value, index) => {
                                             return (<MenuItem key={index} value={value._id}>{value.category}</MenuItem>)
                                         })
@@ -185,7 +185,7 @@ function Home() {
                                     endAdornment={
                                         <InputAdornment position="end">
                                             {/* <Button className="!rounded-xl"> */}
-                                                <SearchIcon className="cursor-pointer hover:bg-gray-100" onClick={() => {
+                                                <SearchIcon className="cursor-pointer rounded-xl m-4 hover:bg-gray-100" variant="outlined" onClick={() => {
                                                     fetchDataList(false, formData.category, formData.duration, formData.remark)
                                                 }}/>
                                             {/* </Button> */}
@@ -193,6 +193,7 @@ function Home() {
                                     aria-describedby="outlined-weight-helper-text"
                                     size="small"
                                     className="!pt-0"
+                                    placeholder="Search by remark"
                                     inputProps={{
                                         'aria-label': 'Search with Remark...',
                                     }}
@@ -280,7 +281,7 @@ function Home() {
                             </TableHead>
                             <TableBody>
                                 {
-                                    data ?
+                                    data.length != 0 ?
                                         data.map((data, index) =>
                                             <TableRow
                                                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}

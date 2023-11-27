@@ -1,8 +1,7 @@
-import { Button, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
-import SettingsIcon from '@mui/icons-material/Settings';
+import { Typography } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Mode from "./Mode";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Category from "./Category";
 import UserProfile from "./UserProfile";
 import { Link, useParams } from "react-router-dom";

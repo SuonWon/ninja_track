@@ -1,7 +1,6 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, Typography } from '@mui/material';
 import axios from 'axios';
 import { useState } from 'react';
-import { baseUrl } from '../constant';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
@@ -17,10 +16,10 @@ const DeleteDialog = ({ deleteDiaOpen, setDeleteDiaOpen, id, fetchDataList,setId
     
         setToastOpen(true);
         setTimeout(() => {
-          setToastOpen(false);
+        setToastOpen(false);
         },3000)
-      }
-    
+    }
+
     const handleClick = async (id) =>{
         if(!id) return;
         console.log(id);

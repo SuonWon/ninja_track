@@ -1,6 +1,4 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
+import { Button, Dialog, DialogActions, DialogContent, Typography } from '@mui/material';
 import axios from 'axios';
 import { useEffect } from 'react';
 import { baseUrl } from '../constant';
@@ -14,8 +12,6 @@ const DeleteDialog = ({ deleteDiaOpen, setDeleteDiaOpen, id, fetchDataList,setId
         await axios.delete(`${baseUrl}/category/${id}`)
         .then((response)=> console.log(response.data.message));
 
-        // await axios.delete(`http://localhost:4000/api/transaction/delete/${id}`)
-        // .then((response)=> console.log(response.data.message))
         useEffect(()=>{
             fetchDataList();
         },[])
@@ -24,10 +20,10 @@ const DeleteDialog = ({ deleteDiaOpen, setDeleteDiaOpen, id, fetchDataList,setId
     }
 
     return (
-      <Dialog
+        <Dialog
         aria-labelledby="customized-dialog-title"
         open={deleteDiaOpen}
-      >
+        >
         <DialogContent>
             <Typography className="text-red-500">
                 Are you sure? 
