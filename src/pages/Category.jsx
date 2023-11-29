@@ -250,7 +250,7 @@ export default function Category() {
           </Button>
           {
             !isEdit ? (
-              <Button variant='contained' className='!capitalize' onClick={handleSubmit}>
+              <Button variant='contained' className='!capitalize' onClick={handleSubmit} style={{backgroundColor: "#05396b"}}>
                 Save & New
               </Button>
             ) : null

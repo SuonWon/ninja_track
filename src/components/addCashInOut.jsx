@@ -363,6 +363,7 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
                                 handleSubmit(false)
                             }} 
                             className='!capitalize'
+                            style={{backgroundColor: "#05396b"}}
                         >
                             Save & New
                         </Button>

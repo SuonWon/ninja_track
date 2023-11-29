@@ -211,7 +211,7 @@ export default function UserProfile() {
           >
             Change password
           </p>
-          <Button variant='contained' className='!capitalize w-[120px]' onClick={updateProfile}>
+          <Button variant='contained' className='!capitalize w-[120px]' onClick={updateProfile} style={{backgroundColor: "#05396b"}} >
               Save
           </Button>
         </div>
@@ -288,7 +288,7 @@ export default function UserProfile() {
         <FormControlLabel control={<Checkbox checked={showPassword} onChange={() => setShowPassword(!showPassword)} />} label="Show Password" />
         </DialogContent>
         <DialogActions className='mr-2'>
-          <Button variant='contained' className='!capitalize' onClick={changePassword}>
+          <Button variant='contained' className='!capitalize' onClick={changePassword} style={{backgroundColor: "#05396b"}}>
               Change
           </Button>
         </DialogActions>

@@ -60,11 +60,12 @@ const Header = () => {
                         sx={{
                             mr: 2,
                             fontFamily: 'monospace',
-                            fontWeight: 700,
+                            fontWeight: 600,
                             boxShadow: 'initial',
                             textDecoration: 'none',
                         }}
-                        className='text-violet-600'
+                        fontSize={30}
+                        style={{color: "#05396b"}}
                     >
                         Ninja Track
                     </Typography>

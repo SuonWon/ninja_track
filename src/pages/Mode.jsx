@@ -272,7 +272,7 @@ export default function Mode() {
           </Button>
           {
             !isEdit ? (
-              <Button variant='contained' type='submit' className='!capitalize' onClick={handleSubmit}>
+              <Button variant='contained' type='submit' className='!capitalize' onClick={handleSubmit} style={{backgroundColor: "#05396b"}}>
                 Save & New
               </Button>
             ) : null
