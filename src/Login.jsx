@@ -98,6 +98,7 @@ export default function Login() {
         }
         await localforage.setItem('data', rec)
         showAlert('Login success!', 'success');
+        console.log('Route');
         history.push('/');
       }
       catch(err) {
