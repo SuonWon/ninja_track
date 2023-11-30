@@ -224,7 +224,7 @@ export default function Mode() {
           sx={{ m: 0, p: 2 }}
           id="customized-dialog-title"
         >
-          Add Payment Mode
+          {isEdit ? "Update Payment Mode" : "Add Payment Mode"}
         </DialogTitle>
         <IconButton
             aria-label="close"
@@ -267,7 +267,7 @@ export default function Mode() {
           }
         </DialogContent>
         <DialogActions className='mr-2'>
-          <Button variant='outlined' type='submit' className='!capitalize w-[120px]' onClick={() => handleSubmit(false)}>
+          <Button variant='outlined' type='submit' className='!capitalize w-[120px]' onClick={() => handleSubmit(false)} style={{color: "#05396b"}}>
               Save
           </Button>
           {

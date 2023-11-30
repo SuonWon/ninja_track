@@ -126,7 +126,7 @@ export default function Login() {
           return;
         }
         console.log(rec._doc);
-        await localforage.setItem('data', rec._doc)
+        await localforage.setItem('data', rec)
         showAlert('User account is created!', 'success');
         navigate('/');
       }
@@ -141,10 +141,10 @@ export default function Login() {
       <div className="grid grid-cols-2 h-[100vh] items-center">
         <div className='grid h-[100vh] items-center border-x-[1px]'>
           <div>
-            <Typography className="flex justify-center text-blue-800" fontSize={70}>
+            <Typography className="flex justify-center text-blue-800" fontSize={70} style={{color: "#05396b"}}>
               NINJA TRACK
             </Typography>
-            <p className='flex justify-end mr-[140px]'>Money Manager</p>
+            <p className='flex justify-end mr-[140px]' style={{color: "#05396b"}}>Money Manager</p>
           </div>
         </div>
         <div className='grid h-[100vh] items-center'>
@@ -153,7 +153,7 @@ export default function Login() {
             {
               isLogin ? (
                 <div>
-                  <Typography className='text-blue-800 flex justify-center' fontWeight={300} fontSize={35}>Welcome to NinjaTrack</Typography>
+                  <Typography className='text-blue-800 flex justify-center' fontWeight={300} fontSize={35} style={{color: "#05396b"}}>Welcome to NinjaTrack</Typography>
                   <div className='flex justify-center border-[1px] px-[60px] py-[50px]'>
                     <div>
                       <p className="text-gray-600">Username</p>
@@ -162,6 +162,7 @@ export default function Login() {
                         size='small'
                         className="!pt-0 w-[300px]"
                         placeholder='Add username'
+                        value={loginData.username}
                         onChange={(e) => {
                           setLoginData({
                             ...loginData,
@@ -179,6 +180,7 @@ export default function Login() {
                         size='small'
                         className="!pt-0 w-[300px]"
                         placeholder='Add password'
+                        value={loginData.password}
                         onChange={(e) => {
                           setLoginData({
                             ...loginData,
@@ -194,15 +196,27 @@ export default function Login() {
                       </div>
                       
                       <div className='mt-4 flex justify-end'>
-                        <Button variant='contained' className='!capitalize w-[120px]' onClick={handleLogin}>
+                        <Button variant='contained' className='!capitalize w-[120px]' onClick={handleLogin} style={{backgroundColor: "#05396b"}}>
                             Login
                         </Button>
                       </div>
                       <div 
                         className='mt-10 flex justify-center cursor-pointer'
-                        onClick={() => setIsLogin(false)}
+                        onClick={() => {
+                          setIsLogin(false)
+                          setLoginData({
+                            username: '',
+                            password: ''
+                          });
+                          setSignupData({
+                            username: '',
+                            fullName: '',
+                            newPassword: '',
+                            confirmPassword: ''
+                          })
+                        }}
                       >
-                        <Typography className='text-blue-800 ' fontWeight={500} fontSize={16}>Create an account.</Typography>
+                        <Typography className='text-blue-800 ' fontWeight={500} fontSize={16} style={{color: "#05396b"}}>Create an account.</Typography>
                       </div>
                     </div>
                   </div>
@@ -218,6 +232,7 @@ export default function Login() {
                         size='small'
                         className="!pt-0 w-[300px] mb-3"
                         placeholder='Add username'
+                        value={signupData.username}
                         onChange={(e) => {
                           setSignupData({
                             ...signupData,
@@ -234,6 +249,7 @@ export default function Login() {
                         size='small'
                         className="!pt-0 w-[300px] mb-3"
                         placeholder='Add full name'
+                        value={signupData.fullName}
                         onChange={(e) => {
                           setSignupData({
                             ...signupData,
@@ -251,6 +267,7 @@ export default function Login() {
                         size='small'
                         className="!pt-0 w-[300px] mb-3"
                         placeholder='Add new password'
+                        value={signupData.newPassword}
                         onChange={(e) => {
                           setSignupData({
                             ...signupData,
@@ -268,6 +285,7 @@ export default function Login() {
                         size='small'
                         className="!pt-0 w-[300px]"
                         placeholder='Add confirm password'
+                        value={signupData.confirmPassword}
                         onChange={(e) => {
                           setSignupData({
                             ...signupData,
@@ -282,15 +300,27 @@ export default function Login() {
                         <FormControlLabel control={<Checkbox onChange={() => setShowPsd({...showPsd, signup: !showPsd.signup})} checked={showPsd.signup}/>} label="Show password" />
                       </div>
                       <div className='mt-4 flex justify-end'>
-                        <Button variant='contained' className='!capitalize w-[120px]' onClick={handleSignup} >
+                        <Button variant='contained' className='!capitalize w-[120px]' onClick={handleSignup} style={{backgroundColor: "#05396b"}}>
                             Sign Up
                         </Button>
                       </div>
                       <div 
                         className='mt-10 flex justify-center cursor-pointer'
-                        onClick={() => setIsLogin(true)}
+                        onClick={() => {
+                          setIsLogin(true); 
+                          setLoginData({
+                            username: '',
+                            password: ''
+                          });
+                          setSignupData({
+                            username: '',
+                            fullName: '',
+                            newPassword: '',
+                            confirmPassword: ''
+                          })
+                        }}
                       >
-                        <Typography className='text-blue-800 ' fontWeight={500} fontSize={16}>Go to login.</Typography>
+                        <Typography className='text-blue-800 ' fontWeight={500} fontSize={16} style={{color: "#05396b"}}>Go to login.</Typography>
                       </div>
                     </div>
                   </div>

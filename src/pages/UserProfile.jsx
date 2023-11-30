@@ -207,7 +207,7 @@ export default function UserProfile() {
         <div className='flex mt-3'>
           <p 
             className='pt-2 mr-[60px] text-sm text-gray-600 cursor-pointer hover:text-black'
-            onClick={() => setOpen(true)}
+            onClick={() => setOpen(true)} style={{color: "#05396b"}}
           >
             Change password
           </p>

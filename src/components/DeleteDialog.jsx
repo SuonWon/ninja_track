@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import { baseUrl } from '../constant';
 
 const DeleteDialog = ({ deleteDiaOpen, setDeleteDiaOpen, id, fetchDataList,setId }) => {
     
@@ -24,7 +25,7 @@ const DeleteDialog = ({ deleteDiaOpen, setDeleteDiaOpen, id, fetchDataList,setId
         if(!id) return;
         console.log(id);
 
-        await axios.delete(`http://localhost:4000/api/transaction/delete/${id}`)
+        await axios.delete(`${baseUrl}/transaction/delete/${id}`)
         .then((response)=> console.log(response.data.message))
         fetchDataList()
         setDeleteDiaOpen(!deleteDiaOpen)

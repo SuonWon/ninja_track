@@ -354,6 +354,7 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
                             }} 
                             type='button' 
                             className='!capitalize w-[120px]'
+                            style={{color: "#05396b"}}
                         >
                             Save
                         </Button>

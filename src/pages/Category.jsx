@@ -201,7 +201,7 @@ export default function Category() {
           sx={{ m: 0, p: 2 }}
           id="customized-dialog-title"
         >
-          Add Category
+          {isEdit ? "Update Category" : "Add Category"}
         </DialogTitle>
         <IconButton
             aria-label="close"
@@ -245,7 +245,7 @@ export default function Category() {
           }
         </DialogContent>
         <DialogActions className='mr-2'>
-          <Button variant='outlined' className='!capitalize w-[120px]' onClick={() => handleSubmit(false)}>
+          <Button variant='outlined' className='!capitalize w-[120px]' onClick={() => handleSubmit(false)} style={{color: "#05396b"}}>
               Save
           </Button>
           {
@@ -257,37 +257,6 @@ export default function Category() {
           }
         </DialogActions>
       </Dialog>
-
-      {/* <Dialog
-        aria-labelledby="customized-dialog-title"
-        open={isDelete}
-      >
-        <DialogContent>
-            <Typography className="text-red-500">
-                Are you sure?
-            </Typography>
-        </DialogContent>
-
-        <DialogActions>
-            <Button 
-                variant='text' 
-                onClick={()=>{
-                    setIsDelete(!isDelete)
-                }} 
-                type='button' 
-                className='!capitalize w-[120px]'
-            >
-                Cancel
-            </Button>
-            <Button 
-                variant='contained' 
-                className='!capitalize !bg-red-500'
-                onClick={() => handleDelete(id)}
-            >
-                Delete
-            </Button>
-        </DialogActions>
-      </Dialog> */}
 
       <Snackbar
         anchorOrigin={{vertical: 'top', horizontal: 'right'}}
