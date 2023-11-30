@@ -5,11 +5,14 @@ import validator from 'validator';
 import { baseUrl } from './constant';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
-import { useNavigate } from 'react-router-dom';
+import { Router, useNavigate } from 'react-router-dom';
 import localforage from 'localforage';
 import Checkbox from '@mui/material/Checkbox';
+import { useHistory } from "react-router-dom";
 
 export default function Login() {
+
+  const history = useHistory();
 
   function showAlert(message, type) {
     setMessage(message);
@@ -95,7 +98,7 @@ export default function Login() {
         }
         await localforage.setItem('data', rec)
         showAlert('Login success!', 'success');
-        navigate('/');
+        history.push('/');
       }
       catch(err) {
         showAlert(err, 'error');
