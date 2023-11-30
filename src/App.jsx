@@ -21,6 +21,7 @@ const App = () => {
       setLoading(false);
       navigate('/Login');
     }
+    navigate('/');
     setLoading(false);
     setUser(data);
   }
