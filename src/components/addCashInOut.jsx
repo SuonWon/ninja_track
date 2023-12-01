@@ -20,6 +20,7 @@ import { baseUrl } from '../constant';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import { Grid } from  'react-loader-spinner'
+import moment from 'moment';
 
 const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelectCashType, fetchDataList}) => {
 
@@ -127,7 +128,7 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
         
         if(validateForm()) {
             isSave ? setLoading(true) : setNewLoading(true);
-            axios.post(baseUrl + '/transaction/add/', {...formData, datetime: date + time, cashType: selectCashType, user: user._id})
+            axios.post(baseUrl + '/transaction/add/', {...formData, datetime: moment.utc(moment(date + time).toISOString()).valueOf(), cashType: selectCashType, user: user._id})
                 .then((response)=>{
                     console.log('Create successfully')
                     showAlert(response.data.message, 'success');

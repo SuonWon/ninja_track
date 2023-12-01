@@ -19,7 +19,7 @@ import { baseUrl } from '../constant';
 import localforage from 'localforage';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-import { Grid } from  'react-loader-spinner'
+import { Grid } from  'react-loader-spinner';
 const EditCashInOut = ({ editDiaOpen, setEditDiaOpen, id, fetchDataList }) => {
 
     // How to user the fetching detail data and how to update with axios in react I request with id?
@@ -147,6 +147,7 @@ const EditCashInOut = ({ editDiaOpen, setEditDiaOpen, id, fetchDataList }) => {
                 .then((response) => {
                     console.log('Data update successfully')
                     showAlert(response.data.message, 'success');
+                    resetFormData();
                     fetchDataList()
                     setIsLoading(false);
                 })

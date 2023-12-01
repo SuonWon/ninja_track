@@ -298,17 +298,16 @@ function Home() {
                                         {
                                             data.length != 0 ?
                                                 data.map((data, index) =>{
-                                                    const date = data.datetime.toString().split('T')[0];
-                                                    const time = data.datetime.toString().split('T')[1].split('.')[0];
+                                                    
                                                     return (
                                                         <TableRow
                                                             sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                                                             key={index}
                                                         >
                                                             <TableCell align="left" sx={{ minWidth: 130 }} className="!py-1 !text-gray-500">
-                                                                {moment(date).format('DD MMM YYYY')}<br />
+                                                                {moment(data.datetime).format('DD MMM YYYY')}<br />
                                                                 <span style={{ 'fontSize': '12px' }} className="text-muted">
-                                                                    {time}
+                                                                    {moment(data.datetime).format('hh:mm A')}
                                                                 </span>
                                                             </TableCell>
                                                             <TableCell align="left" sx={{ minWidth: 220 }} className=" !py-1 !text-gray-500">
