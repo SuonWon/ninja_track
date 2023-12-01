@@ -1,5 +1,4 @@
 import { Grid, Typography } from '@mui/material'
-// import { HiMenuAlt4 } from "react-icons/hi";
 import { AiFillPlusCircle, AiFillMinusCircle } from "react-icons/ai";
 import { FaEquals } from "react-icons/fa";
 

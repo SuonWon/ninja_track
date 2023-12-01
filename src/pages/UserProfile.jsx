@@ -16,6 +16,7 @@ import Snackbar from '@mui/material/Snackbar';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import localforage from 'localforage';
+import { Grid } from  'react-loader-spinner'
 
 export default function UserProfile() {
 
@@ -31,6 +32,8 @@ export default function UserProfile() {
   const [message, setMessage] = useState('');
   const [msgType, setMsgType] = useState('success');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+  const [isPsdLoading, setPsdLoading] = useState(false);
 
   function showAlert(message, type) {
     setMessage(message);
@@ -81,7 +84,7 @@ export default function UserProfile() {
   async function updateProfile() {
     if(validateForm()) {
       try {
-
+        setLoading(true);
         const response = await fetch(baseUrl + '/user/edit/' + userData._id, {
           method: "PUT",
           headers: {
@@ -91,16 +94,15 @@ export default function UserProfile() {
         });
         if(!response.ok) {
           showAlert('Error in updating profile!', 'error');
+          setLoading(false);
           return;
         }
-        // const data = await response.json();
-        // console.log(data);
-        // await localforage.setItem('data', data.data);
-        // location.reload();
+        setLoading(false);
         showAlert('Profile is updated successfully! For updating profile name, please login again.', 'success');
       }
       catch(err) {
         showAlert('Error in updating profile!', 'error');
+        setLoading(false);
       }
     }
   }
@@ -108,6 +110,7 @@ export default function UserProfile() {
   async function changePassword() {
     if(passwordValidate()) {
       try {
+        setPsdLoading(true);
         const data = {
           ...userData,
           password: password.confirm
@@ -121,17 +124,23 @@ export default function UserProfile() {
         })
         if(!response.ok) {
           showAlert('Error in changing password!', 'error');
+          setPsdLoading(false);
           return;
         }
 
         showAlert('Password is changed successfully!', 'success');
         setPasswordValidation({});
+        setPsdLoading(false);
         setOpen(false);
       }
       catch(err) {
         showAlert('Error in changing password!', 'error');
+        setPsdLoading(false);
       }
-      
+      setPassword({
+        new: '',
+        confirm: '',
+      })
     }
   }
 
@@ -212,6 +221,15 @@ export default function UserProfile() {
             Change password
           </p>
           <Button variant='contained' className='!capitalize w-[120px]' onClick={updateProfile} style={{backgroundColor: "#05396b"}} >
+              <Grid
+                height="20"
+                width="20"
+                color="#ffff"
+                ariaLabel="grid-loading"
+                radius="12.5"
+                visible={isLoading}
+                wrapperClass="mr-1"
+              />
               Save
           </Button>
         </div>
@@ -289,6 +307,15 @@ export default function UserProfile() {
         </DialogContent>
         <DialogActions className='mr-2'>
           <Button variant='contained' className='!capitalize' onClick={changePassword} style={{backgroundColor: "#05396b"}}>
+              <Grid
+                height="20"
+                width="20"
+                color="#ffff"
+                ariaLabel="grid-loading"
+                radius="12.5"
+                visible={isPsdLoading}
+                wrapperClass="mr-1"
+              />
               Change
           </Button>
         </DialogActions>

@@ -16,6 +16,7 @@ import { baseUrl } from '../constant';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import localforage from 'localforage';
+import { Grid } from  'react-loader-spinner'
 
 export default function Category() {
   
@@ -31,6 +32,9 @@ export default function Category() {
   const [message, setMessage] = useState('');
   const [msgType, setMsgType] = useState('success');
   const [user, setUser] = useState({});
+  const [isLoading, setLoading] = useState(false);
+  const [isNewLoading, setNewLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
 
   function showAlert(message, type) {
     setMessage(message);
@@ -44,13 +48,16 @@ export default function Category() {
 
   async function getData() {
     try {
+      setDataLoading(true);
       const curUser = await localforage.getItem('data')
       setUser(curUser);
 
       const response = await fetch(baseUrl + '/category?user='+ curUser._id);
       setCategoryList(await response.json());
+      setDataLoading(false);
     } catch(err) {
       showAlert('Error in fetching data!', 'error');
+      setDataLoading(false);
     }    
   }
 
@@ -66,6 +73,7 @@ export default function Category() {
   async function handleSubmit(isNew = true) {
     if(validateForm()) {
       try {
+        isNew ? setNewLoading(true) : setLoading(true);
         if(isEdit) {
           const response = await fetch(baseUrl + '/category/edit/' + categoryData.id, {
             method: "PUT",
@@ -76,9 +84,11 @@ export default function Category() {
           })
           if(!response.ok) {
             showAlert(isEdit ? 'Error in updating data!' : 'Error in saving data!', 'error');
+            setLoading(false);
             return;
           }
           showAlert('Data is updated successfully!', 'success');
+          setLoading(false);
         }
         else {
           const data = {
@@ -94,20 +104,25 @@ export default function Category() {
           })
           if(!response.ok) {
             showAlert(isEdit ? 'Error in updating data!' : 'Error in saving data!', 'error');
+            isNew ? setNewLoading(false) : setLoading(false);
             return;
           }
           showAlert('Data is saved successfully!', 'success');
+          isNew ? setNewLoading(false) : setLoading(false);
         }
         setCategoryData({
           id: '',
           category: ''
         });
-        setOpen(isNew);
+        if(!isNew) {
+          setOpen(isNew);
+        }
         setEdit(false);
         getData();
 
       } catch(err) {
         showAlert(isEdit ? 'Error in updating data!' : 'Error in saving data!', 'error');
+        isNew ? setNewLoading(false) : setLoading(false);
       }
     }
   }
@@ -161,35 +176,50 @@ export default function Category() {
         </div>
       </div>
       <p className='text-gray-600 text-xs mb-2'>Categories({categoryList.length})</p>
-      <div className='h-[500px] overflow-y-auto'>
-        {
-          categoryList.map((rec, index) => {
-            return (
-              <div 
-                className='flex justify-between mb-3 py-2 px-5 border-[1px] border-gray-400 w-[400px]'
-                key={index}
-              >
-                <p className='text-gray-600 pt-1'>{rec.category}</p>
-                <div className='flex'>
-                  <IconButton onClick={() => {
-                    setOpen(true);
-                    setEdit(true);
-                    setCategoryData({
-                      id: rec._id,
-                      category: rec.category
-                    })
-                  }}>
-                    <EditIcon className='text-info !w-[18px] !h-[18px] text-blue-600 cursor-pointer' />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(rec._id)}>
-                    <DeleteIcon className='text-danger !w-[18px] !h-[18px] text-red-600 cursor-pointer' /> 
-                  </IconButton>
-                </div>
-              </div>
-            )
-          })
-        }
-      </div>
+      {
+        dataLoading ? (
+          <Grid
+            height="40"
+            width="40"
+            color="#05396b"
+            ariaLabel="grid-loading"
+            radius="12.5"
+            visible={dataLoading}
+            wrapperClass='ml-[170px]'
+          />
+        ) : (
+          <div className='h-[500px] overflow-y-auto'>
+            {
+              categoryList.map((rec, index) => {
+                return (
+                  <div 
+                    className='flex justify-between mb-3 py-2 px-5 border-[1px] border-gray-400 w-[400px]'
+                    key={index}
+                  >
+                    <p className='text-gray-600 pt-1'>{rec.category}</p>
+                    <div className='flex'>
+                      <IconButton onClick={() => {
+                        setOpen(true);
+                        setEdit(true);
+                        setCategoryData({
+                          id: rec._id,
+                          category: rec.category
+                        })
+                      }}>
+                        <EditIcon className='text-info !w-[18px] !h-[18px] text-blue-600 cursor-pointer' />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(rec._id)}>
+                        <DeleteIcon className='text-danger !w-[18px] !h-[18px] text-red-600 cursor-pointer' /> 
+                      </IconButton>
+                    </div>
+                  </div>
+                )
+              })
+            }
+          </div>
+        )
+      }
+      
 
       <Dialog
         aria-labelledby="customized-dialog-title"
@@ -246,11 +276,29 @@ export default function Category() {
         </DialogContent>
         <DialogActions className='mr-2'>
           <Button variant='outlined' className='!capitalize w-[120px]' onClick={() => handleSubmit(false)} style={{color: "#05396b"}}>
+              <Grid
+                  height="20"
+                  width="20"
+                  color="#05396b"
+                  ariaLabel="grid-loading"
+                  radius="12.5"
+                  visible={isLoading}
+                  wrapperClass="mr-1"
+              />
               Save
           </Button>
           {
             !isEdit ? (
               <Button variant='contained' className='!capitalize' onClick={handleSubmit} style={{backgroundColor: "#05396b"}}>
+                <Grid
+                  height="20"
+                  width="20"
+                  color="#ffffff"
+                  ariaLabel="grid-loading"
+                  radius="12.5"
+                  visible={isNewLoading}
+                  wrapperClass="mr-1"
+                />
                 Save & New
               </Button>
             ) : null

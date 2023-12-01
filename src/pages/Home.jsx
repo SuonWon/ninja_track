@@ -10,11 +10,13 @@ import axios from "axios";
 import dayjs from "dayjs";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import DeleteDialog from '../components/deleteDialog';
+import DeleteDialog from '../components/DeleteDialog';
 import EditCashInOut from "../components/EditCashInOut";
 import { baseUrl } from "../constant";
 import localforage from "localforage";
 import SearchIcon from '@mui/icons-material/Search';
+import { Grid } from  'react-loader-spinner'
+import moment from 'moment';
 function Home() {
 
     const [open, setOpen] = useState(false);
@@ -106,7 +108,7 @@ function Home() {
         fetchDataList()
     }, [])
 
-    if (loading) return <div>Loading ...</div>
+    // if (loading) return <div>Loading ...</div>
 
     return (
         <div className="lg:container mx-auto mt-3">
@@ -252,106 +254,124 @@ function Home() {
                 </div>
 
                 <div>
-                    <TableContainer component={Paper} sx={{ minWidth: 960 }} >
-                        <Table aria-label="simple table">
-                            <TableHead>
-                                <TableRow
-                                    style={{ 'backgroundColor': '#f5f5f5', padding: 0 }}
-                                >
-                                    <TableCell className="py-2 !text-gray-400">
-                                        Date & Time
-                                    </TableCell>
-                                    <TableCell align="left" className="!text-gray-400 py-2">
-                                        Remark
-                                    </TableCell>
-                                    <TableCell align="left" className="!text-gray-400 py-2">
-                                        Category
-                                    </TableCell>
-                                    <TableCell align="left" className="!text-gray-400 py-2">
-                                        Mode
-                                    </TableCell>
-                                    <TableCell align="right" className="!text-gray-400 py-2">
-                                        Amount
-                                    </TableCell>
-                                    {/* <TableCell align="center" className="!text-gray-400 py-2">
-                                        Balance
-                                    </TableCell> */}
-                                    <TableCell align="right" className="py-2"></TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {
-                                    data.length != 0 ?
-                                        data.map((data, index) =>
-                                            <TableRow
-                                                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                                                key={index}
-                                            >
-                                                <TableCell align="left" sx={{ minWidth: 130 }} className="!py-1 !text-gray-500">
-                                                    {dayjs(data.datetime).format("DD MMM, YYYY")}<br />
-                                                    <span style={{ 'fontSize': '12px' }} className="text-muted">
-                                                        {dayjs(data.datetime).format("HH:mm A")}
-                                                    </span>
-                                                </TableCell>
-                                                <TableCell align="left" sx={{ minWidth: 220 }} className=" !py-1 !text-gray-500">
-                                                    {data.remark}
-                                                </TableCell>
-                                                <TableCell align="left" sx={{ minWidth: 150 }} className="!py-1 !text-gray-500">
-                                                    {data.category}
-                                                </TableCell>
-                                                <TableCell align="left" sx={{ minWidth: 100 }} className="!py-2 !text-gray-500">
-                                                    {data.paymentMode}
-                                                </TableCell>
-                                                <TableCell align="right" sx={{ minWidth: 120 }} className="!py-1 !text-gray-500">
-                                                    {data.amount}
-                                                </TableCell>
-                                                {/* <TableCell align="center" sx={{ minWidth: 120 }} className="!py-1 !text-gray-500">
-                                                    50,000
-                                                </TableCell> */}
-                                                <TableCell align="right" sx={{ minWidth: 120 }} className="!py-1">
-                                                    <Tooltip title="Edit">
-                                                        <IconButton onClick={() => {
-                                                            setEditDiaOpen(!editDiaOpen)
-                                                            setId(data._id)
-                                                        }}>
-                                                            <EditIcon style={{ cursor: 'pointer' }} className='text-info !w-[18px] !h-[18px] text-blue-600' />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                    <Tooltip title="Delete">
-                                                        <IconButton onClick={() => {
-                                                            setDeleteDiaOpen(!deleteDiaOpen)
-                                                            setId(data._id)
-                                                        }}>
-                                                            <DeleteIcon style={{ cursor: 'pointer' }} className='text-danger !w-[18px] !h-[18px] text-red-600' />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                </TableCell>
-                                            </TableRow>
-                                        )
-                                        :
+                {
+                    loading ? (
+                        <Grid
+                            height="40"
+                            width="40"
+                            color="#05396b"
+                            ariaLabel="grid-loading"
+                            radius="12.5"
+                            visible={loading}
+                            wrapperClass='grid grid-rows justify-center items-center'
+                        />
+                    ) : (
+                            <TableContainer component={Paper} sx={{ minWidth: 960 }} >
+                                <Table aria-label="simple table">
+                                    <TableHead>
                                         <TableRow
-                                            sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                                            className=' !text-gray-400 h-[45px]'
+                                            style={{ 'backgroundColor': '#f5f5f5', padding: 0 }}
                                         >
-                                            <TableCell
-                                                colSpan={7}
-                                                align='center'
-                                                className='!text-gray-400'
-                                            >
-                                                There is no Data
+                                            <TableCell className="py-2 !text-gray-400">
+                                                Date & Time
                                             </TableCell>
+                                            <TableCell align="left" className="!text-gray-400 py-2">
+                                                Remark
+                                            </TableCell>
+                                            <TableCell align="left" className="!text-gray-400 py-2">
+                                                Category
+                                            </TableCell>
+                                            <TableCell align="left" className="!text-gray-400 py-2">
+                                                Mode
+                                            </TableCell>
+                                            <TableCell align="center" className="!text-gray-400 py-2">
+                                                Cash Type
+                                            </TableCell>
+                                            <TableCell align="right" className="!text-gray-400 py-2">
+                                                Amount
+                                            </TableCell>
+                                            <TableCell align="right" className="py-2"></TableCell>
                                         </TableRow>
-                                }
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-
+                                    </TableHead>
+                                    
+                                    <TableBody>
+                                        {
+                                            data.length != 0 ?
+                                                data.map((data, index) =>{
+                                                    const date = data.datetime.toString().split('T')[0];
+                                                    const time = data.datetime.toString().split('T')[1].split('.')[0];
+                                                    return (
+                                                        <TableRow
+                                                            sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                                                            key={index}
+                                                        >
+                                                            <TableCell align="left" sx={{ minWidth: 130 }} className="!py-1 !text-gray-500">
+                                                                {moment(date).format('DD MMM YYYY')}<br />
+                                                                <span style={{ 'fontSize': '12px' }} className="text-muted">
+                                                                    {time}
+                                                                </span>
+                                                            </TableCell>
+                                                            <TableCell align="left" sx={{ minWidth: 220 }} className=" !py-1 !text-gray-500">
+                                                                {data.remark}
+                                                            </TableCell>
+                                                            <TableCell align="left" sx={{ minWidth: 150 }} className="!py-1 !text-gray-500">
+                                                                {data.category}
+                                                            </TableCell>
+                                                            <TableCell align="left" sx={{ minWidth: 100 }} className="!py-2 !text-gray-500">
+                                                                {data.paymentMode}
+                                                            </TableCell>
+                                                            <TableCell align="center" sx={{ minWidth: 120 }} className={`!py-1 ${data.cashType == "CREDIT" ? "!text-red-600" : "!text-green-700"}`}>
+                                                                {data.cashType ==  "CREDIT" ? "Cash Out" : "Cash In"}
+                                                            </TableCell>
+                                                            <TableCell align="right" sx={{ minWidth: 120 }} className="!py-1 !text-gray-500">
+                                                                {data.amount}
+                                                            </TableCell>
+                                                            <TableCell align="right" sx={{ minWidth: 120 }} className="!py-1">
+                                                                <Tooltip title="Edit">
+                                                                    <IconButton onClick={() => {
+                                                                        setEditDiaOpen(!editDiaOpen)
+                                                                        setId(data._id)
+                                                                    }}>
+                                                                        <EditIcon style={{ cursor: 'pointer' }} className='text-info !w-[18px] !h-[18px] text-blue-600' />
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                                <Tooltip title="Delete">
+                                                                    <IconButton onClick={() => {
+                                                                        setDeleteDiaOpen(!deleteDiaOpen)
+                                                                        setId(data._id)
+                                                                    }}>
+                                                                        <DeleteIcon style={{ cursor: 'pointer' }} className='text-danger !w-[18px] !h-[18px] text-red-600' />
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )}
+                                                )
+                                                :
+                                                <TableRow
+                                                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                                                    className=' !text-gray-400 h-[45px]'
+                                                >
+                                                    <TableCell
+                                                        colSpan={7}
+                                                        align='center'
+                                                        className='!text-gray-400'
+                                                    >
+                                                        There is no Data
+                                                    </TableCell>
+                                                </TableRow>
+                                        }
+                                    </TableBody>
+                                        
+                                </Table>
+                            </TableContainer>
+                        )
+                    }
                     <EditCashInOut
                         editDiaOpen={editDiaOpen}
                         setEditDiaOpen={setEditDiaOpen}
                         fetchDataList={fetchDataList}
                         id={id}
-                        //categoryList={master.category.length == 0 ? master.category : []}
                     />
 
                     <DeleteDialog 

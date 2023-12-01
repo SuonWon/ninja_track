@@ -19,6 +19,7 @@ import { baseUrl } from '../constant';
 import localforage from 'localforage';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import { Grid } from  'react-loader-spinner'
 const EditCashInOut = ({ editDiaOpen, setEditDiaOpen, id, fetchDataList }) => {
 
     // How to user the fetching detail data and how to update with axios in react I request with id?
@@ -39,6 +40,7 @@ const EditCashInOut = ({ editDiaOpen, setEditDiaOpen, id, fetchDataList }) => {
     const [toastOpen, setToastOpen] = useState(false);
     const [message, setMessage] = useState('');
     const [msgType, setMsgType] = useState('success');
+    const [isLoading, setIsLoading] = useState(false);
 
     function showAlert(message, type) {
         setMessage(message);
@@ -135,6 +137,7 @@ const EditCashInOut = ({ editDiaOpen, setEditDiaOpen, id, fetchDataList }) => {
     //! Submit Form 
     const handleSubmit = () => {
         if (validateForm()) {
+            setIsLoading(true);
             axios.put(`${baseUrl}/transaction/edit/${id}`,
                 {
                     ...formData,
@@ -145,9 +148,11 @@ const EditCashInOut = ({ editDiaOpen, setEditDiaOpen, id, fetchDataList }) => {
                     console.log('Data update successfully')
                     showAlert(response.data.message, 'success');
                     fetchDataList()
+                    setIsLoading(false);
                 })
                 .catch(error => {
                     console.log('Error:', error);
+                    setIsLoading(false);
                 });
 
             setEditDiaOpen(!editDiaOpen)
@@ -365,6 +370,15 @@ const EditCashInOut = ({ editDiaOpen, setEditDiaOpen, id, fetchDataList }) => {
                             }}
                             className='!capitalize'
                         >
+                            <Grid
+                                height="20"
+                                width="20"
+                                color="#ffffff"
+                                ariaLabel="grid-loading"
+                                radius="12.5"
+                                visible={isLoading}
+                                wrapperClass="mr-1"
+                            />
                             Update
                         </Button>
                     </DialogActions>

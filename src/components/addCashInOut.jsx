@@ -19,6 +19,8 @@ import localforage from 'localforage';
 import { baseUrl } from '../constant';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import { Grid } from  'react-loader-spinner'
+
 const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelectCashType, fetchDataList}) => {
 
     const [selectDate, setSelectDate] = useState(dayjs(new Date()));
@@ -38,6 +40,8 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
     const [toastOpen, setToastOpen] = useState(false);
     const [message, setMessage] = useState('');
     const [msgType, setMsgType] = useState('success');
+    const [isLoading, setLoading] = useState(false);
+    const [isNewLoading, setNewLoading] = useState(false);
 
     function showAlert(message, type) {
         setMessage(message);
@@ -122,14 +126,18 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
     const handleSubmit = (isSave) => {
         
         if(validateForm()) {
+            isSave ? setLoading(true) : setNewLoading(true);
             axios.post(baseUrl + '/transaction/add/', {...formData, datetime: date + time, cashType: selectCashType, user: user._id})
                 .then((response)=>{
                     console.log('Create successfully')
                     showAlert(response.data.message, 'success');
+                    isSave ? setLoading(false) : setNewLoading(false);
                     fetchDataList()
                 })
                 .catch(error => {
                     console.log('Error:', error);
+                    showAlert(error, 'error');
+                    isSave ? setLoading(false) : setNewLoading(false);
                 });
 
             resetFormData()
@@ -356,6 +364,15 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
                             className='!capitalize w-[120px]'
                             style={{color: "#05396b"}}
                         >
+                            <Grid
+                                height="20"
+                                width="20"
+                                color="#05396b"
+                                ariaLabel="grid-loading"
+                                radius="12.5"
+                                visible={isLoading}
+                                wrapperClass="mr-1"
+                            />
                             Save
                         </Button>
                         <Button 
@@ -366,6 +383,15 @@ const addCashInOut = ({open, setOpen, title, setTitle, selectCashType, setSelect
                             className='!capitalize'
                             style={{backgroundColor: "#05396b"}}
                         >
+                            <Grid
+                                height="20"
+                                width="20"
+                                color="#ffffff"
+                                ariaLabel="grid-loading"
+                                radius="12.5"
+                                visible={isNewLoading}
+                                wrapperClass="mr-1"
+                            />
                             Save & New
                         </Button>
                     </DialogActions>

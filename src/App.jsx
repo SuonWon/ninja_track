@@ -4,14 +4,22 @@ import Home from "./pages/Home";
 import Setting from "./pages/Setting";
 import Login from "./Login";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import localforage from "localforage";
 
 const App = () => {
 
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({
+    _id: '',
+    createdAt: '',
+    email: '',
+    fullName: '',
+    phoneNo: '',
+    updatedAt: '',
+    username: ''
+  });
   const [loading, setLoading] = useState(false);
 
   async function checkUser() {
@@ -40,12 +48,10 @@ const App = () => {
           <div>
             {
               !loading ? (
-                user != null || user != undefined ? (
-                  <div>
-                    <Header />
-                    <Home />
-                  </div>
-                ) : <Login/>
+                <div>
+                  <Header />
+                  <Home />
+                </div>
               ) : (<p>Loading...</p>)
             }
           </div>
@@ -54,12 +60,10 @@ const App = () => {
           <div>
             {
               !loading ? (
-                user != null || user != undefined ? (
-                  <div>
-                    <Header />
-                    <Setting />
-                  </div>
-                ) : <Login/>
+                <div>
+                  <Header />
+                  <Setting />
+                </div>
               ) : (<p>Loading...</p>)
               
             }

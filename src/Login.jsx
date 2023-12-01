@@ -1,28 +1,17 @@
 import React, { useState } from 'react'
-import { Button, FormControl, InputLabel, MenuItem, Select, Typography,FormControlLabel } from "@mui/material";
+import { Button, Typography,FormControlLabel } from "@mui/material";
 import OutlinedInput from '@mui/material/OutlinedInput';
 import validator from 'validator';
 import { baseUrl } from './constant';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
-import { Router, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import localforage from 'localforage';
 import Checkbox from '@mui/material/Checkbox';
-import { useHistory } from "react-router-dom";
+import { Grid } from  'react-loader-spinner'
+
 
 export default function Login() {
-
-  const history = useHistory();
-
-  function showAlert(message, type) {
-    setMessage(message);
-    setMsgType(type);
-
-    setToastOpen(true);
-    setTimeout(() => {
-      setToastOpen(false);
-    },3000)
-  }
 
   const navigate = useNavigate();
 
@@ -46,6 +35,17 @@ export default function Login() {
     login: false,
     signup: false
   })
+  const [isLoading, setIsLoading] = useState(false);
+
+  function showAlert(message, type) {
+    setMessage(message);
+    setMsgType(type);
+
+    setToastOpen(true);
+    setTimeout(() => {
+      setToastOpen(false);
+    },3000)
+  }
 
   function validateLogin() {
     const newErrors = {};
@@ -83,6 +83,7 @@ export default function Login() {
 
   async function handleLogin() {
     if(validateLogin()) {
+      setIsLoading(true);
       try {
         const response = await fetch(baseUrl + '/login', {
           method: "POST",
@@ -94,21 +95,32 @@ export default function Login() {
         const rec = await response.json();
         if(!response.ok) {
           showAlert(rec.error, 'error');
+          setIsLoading(false);
           return;
         }
-        await localforage.setItem('data', rec)
-        showAlert('Login success!', 'success');
-        console.log('Route');
-        history.push('/');
+        const user = {
+          _id: rec._id,
+          createdAt: rec.createdAt,
+          email: rec.email,
+          fullName: rec.fullName,
+          phoneNo: rec.phoneNo,
+          updatedAt: rec.updatedAt,
+          username: rec.username
+        }
+        await localforage.setItem('data', user)
+        setIsLoading(false);
+        navigate('/');
       }
       catch(err) {
         showAlert(err, 'error');
+        setIsLoading(false);
       }
     }
   }
 
   async function handleSignup() {
     if(validateSignup()) {
+      setIsLoading(true);
       try{
         const data = {
           username: signupData.username,
@@ -127,15 +139,25 @@ export default function Login() {
         const rec = await response.json();
         if(!response.ok) {
           showAlert(rec.error, 'error');
+          setIsLoading(false);
           return;
         }
-        console.log(rec._doc);
-        await localforage.setItem('data', rec)
-        showAlert('User account is created!', 'success');
+        const user = {
+          _id: rec._id,
+          createdAt: rec.createdAt,
+          email: rec.email,
+          fullName: rec.fullName,
+          phoneNo: rec.phoneNo,
+          updatedAt: rec.updatedAt,
+          username: rec.username
+        }
+        await localforage.setItem('data', user)
+        setIsLoading(false);
         navigate('/');
       }
       catch(err) {
         showAlert(err, 'error');
+        setIsLoading(false);
       }
     }
   }
@@ -145,10 +167,11 @@ export default function Login() {
       <div className="grid grid-cols-2 h-[100vh] items-center">
         <div className='grid h-[100vh] items-center border-x-[1px]'>
           <div>
-            <Typography className="flex justify-center text-blue-800" fontSize={70} style={{color: "#05396b"}}>
+            <Typography className="grid grid-rows justify-center items-center" fontSize={70} style={{color: "#05396b"}}>
               NINJA TRACK
+              <span className='flex justify-end text-[20px]' style={{color: "#05396b"}}>Money Manager</span>
             </Typography>
-            <p className='flex justify-end mr-[140px]' style={{color: "#05396b"}}>Money Manager</p>
+            <p className='flex justify-end mr-[140px]' style={{color: "#05396b"}}></p>
           </div>
         </div>
         <div className='grid h-[100vh] items-center'>
@@ -157,7 +180,7 @@ export default function Login() {
             {
               isLogin ? (
                 <div>
-                  <Typography className='text-blue-800 flex justify-center' fontWeight={300} fontSize={35} style={{color: "#05396b"}}>Welcome to NinjaTrack</Typography>
+                  <Typography className='flex justify-center' fontWeight={300} fontSize={35} style={{color: "#05396b"}}>Welcome to NinjaTrack</Typography>
                   <div className='flex justify-center border-[1px] px-[60px] py-[50px]'>
                     <div>
                       <p className="text-gray-600">Username</p>
@@ -201,7 +224,16 @@ export default function Login() {
                       
                       <div className='mt-4 flex justify-end'>
                         <Button variant='contained' className='!capitalize w-[120px]' onClick={handleLogin} style={{backgroundColor: "#05396b"}}>
-                            Login
+                          <Grid
+                            height="15"
+                            width="15"
+                            color="#ffffff"
+                            ariaLabel="grid-loading"
+                            radius="12.5"
+                            visible={isLoading}
+                            wrapperClass="mr-1"
+                          />
+                          Login
                         </Button>
                       </div>
                       <div 
@@ -304,8 +336,18 @@ export default function Login() {
                         <FormControlLabel control={<Checkbox onChange={() => setShowPsd({...showPsd, signup: !showPsd.signup})} checked={showPsd.signup}/>} label="Show password" />
                       </div>
                       <div className='mt-4 flex justify-end'>
-                        <Button variant='contained' className='!capitalize w-[120px]' onClick={handleSignup} style={{backgroundColor: "#05396b"}}>
-                            Sign Up
+                        <Button variant='contained' className='!capitalize w-[120px]' onClick={handleSignup} style={{backgroundColor: "#05396b"}} disabled={isLoading}>
+                        
+                          <Grid
+                            height="20"
+                            width="20"
+                            color="#ffffff"
+                            ariaLabel="grid-loading"
+                            radius="12.5"
+                            visible={isLoading}
+                            wrapperClass="mr-1"
+                          />
+                          Sign Up
                         </Button>
                       </div>
                       <div 

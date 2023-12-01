@@ -16,6 +16,7 @@ import { baseUrl } from '../constant';
 import validator from 'validator';
 import Alert from '@mui/material/Alert';
 import localforage from 'localforage';
+import { Grid } from  'react-loader-spinner'
 
 export default function Mode() {
 
@@ -31,6 +32,9 @@ export default function Mode() {
   const [message, setMessage] = useState('');
   const [msgType, setMsgType] = useState('success');
   const [user, setUser] = useState({});
+  const [isLoading, setLoading] = useState(false);
+  const [isNewLoading, setNewLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
 
   function showAlert(message, type) {
     setMessage(message);
@@ -44,14 +48,18 @@ export default function Mode() {
 
   async function getData() {
     try {
+      setDataLoading(true);
       const curUser = await localforage.getItem('data');
       setUser(curUser);
 
       const response = await fetch(baseUrl + '/payment-mode?user=' + curUser._id);
 
       setModeList(await response.json());
+      setDataLoading(false);
     } catch(err) {
       showAlert('Error in fetching dataaaa!', 'error');
+
+      setDataLoading(false);
     }
   }
 
@@ -67,6 +75,7 @@ export default function Mode() {
   async function handleSubmit(isNew = true) {
     if(validateForm()) {
       try {
+        isNew ? setNewLoading(true) : setLoading(true);
         if(isEdit) {
           const response = await fetch(baseUrl + '/payment-mode/edit/' + modeData.id, {
             method: "PUT",
@@ -77,9 +86,11 @@ export default function Mode() {
           })
           if(!response.ok) {
             showAlert('Error in updating data!', 'error');
+            setLoading(false);
             return;
           }
           showAlert('Data is updated successfully!', 'success');
+          setLoading(false);
         }
         else {
           const data = {
@@ -95,50 +106,31 @@ export default function Mode() {
           })
           if(!response.ok) {
             showAlert('Error in saving data!', 'error');
+            isNew ? setNewLoading(false) : setLoading(false);
             return;
           }
           showAlert('Data is saved successfully!', 'success');
+          isNew ? setNewLoading(false) : setLoading(false);
         }
 
         setModeData({
           id: '',
           mode: ''
         })
-        setOpen(isNew);
+        if(!isNew) {
+          setOpen(isNew);
+        }
+        
         setEdit(false);
         getData();
 
       }
       catch(err) {
         showAlert(isEdit ? 'Error in updating data!' : 'Error in saving data!', 'error');
+        isNew ? setNewLoading(false) : setLoading(false);
       }
     }
   }
-
-  // async function handleSubmitNew() {
-  //   if(validateForm()) {
-  //     await fetch(baseUrl + '/payment-mode/add', {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(modeData)
-  //     })
-
-  //     setMessage('Data is saved successfully!');
-
-  //     setModeData({
-  //       mode: ''
-  //     })
-  //     getData();
-
-  //     setToastOpen(true);
-  //     setTimeout(() => {
-  //       setToastOpen(false);
-  //     },2000)
-
-  //   }
-  // }
 
   async function handleDelete(id) {
     try {
@@ -184,35 +176,50 @@ export default function Mode() {
         </div>
       </div>
       <p className='text-gray-600 text-xs mb-2'>Payment Modes({modeList.length})</p>
-      <div className='h-[500px] overflow-y-auto'>
-        {
-          modeList.map((rec, index) => {
-            return (
-              <div 
-                className='flex justify-between mb-3 py-2 px-5 border-[1px] border-gray-400 w-[400px]'
-                key={index}
-              >
-                <p className='text-gray-600 pt-1'>{rec.mode}</p>
-                <div className='flex'>
-                  <IconButton onClick={() => {
-                    setOpen(true);
-                    setEdit(true);
-                    setModeData({
-                      id: rec._id,
-                      mode: rec.mode
-                    })
-                  }}>
-                    <EditIcon className='text-info !w-[18px] !h-[18px] text-blue-600 cursor-pointer' />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(rec._id)}>
-                    <DeleteIcon className='text-danger !w-[18px] !h-[18px] text-red-600 cursor-pointer' /> 
-                  </IconButton>
-                </div>
-              </div>
-            )
-          })
-        }
-      </div>
+      {
+        dataLoading ? (
+          <Grid
+            height="40"
+            width="40"
+            color="#05396b"
+            ariaLabel="grid-loading"
+            radius="12.5"
+            visible={dataLoading}
+            wrapperClass='ml-[170px]'
+          />
+        ) : (
+          <div className='h-[500px] overflow-y-auto'>
+            {
+              modeList.map((rec, index) => {
+                return (
+                  <div 
+                    className='flex justify-between mb-3 py-2 px-5 border-[1px] border-gray-400 w-[400px]'
+                    key={index}
+                  >
+                    <p className='text-gray-600 pt-1'>{rec.mode}</p>
+                    <div className='flex'>
+                      <IconButton onClick={() => {
+                        setOpen(true);
+                        setEdit(true);
+                        setModeData({
+                          id: rec._id,
+                          mode: rec.mode
+                        })
+                      }}>
+                        <EditIcon className='text-info !w-[18px] !h-[18px] text-blue-600 cursor-pointer' />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(rec._id)}>
+                        <DeleteIcon className='text-danger !w-[18px] !h-[18px] text-red-600 cursor-pointer' /> 
+                      </IconButton>
+                    </div>
+                  </div>
+                )
+              })
+            }
+          </div>
+        )
+      }
+      
 
       <Dialog
         aria-labelledby="customized-dialog-title"
@@ -268,11 +275,29 @@ export default function Mode() {
         </DialogContent>
         <DialogActions className='mr-2'>
           <Button variant='outlined' type='submit' className='!capitalize w-[120px]' onClick={() => handleSubmit(false)} style={{color: "#05396b"}}>
+              <Grid
+                  height="20"
+                  width="20"
+                  color="#05396b"
+                  ariaLabel="grid-loading"
+                  radius="12.5"
+                  visible={isLoading}
+                  wrapperClass="mr-1"
+              />
               Save
           </Button>
           {
             !isEdit ? (
               <Button variant='contained' type='submit' className='!capitalize' onClick={handleSubmit} style={{backgroundColor: "#05396b"}}>
+                <Grid
+                  height="20"
+                  width="20"
+                  color="#ffffff"
+                  ariaLabel="grid-loading"
+                  radius="12.5"
+                  visible={isNewLoading}
+                  wrapperClass="mr-1"
+                />
                 Save & New
               </Button>
             ) : null
