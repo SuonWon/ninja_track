@@ -20,6 +20,7 @@ import localforage from 'localforage';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import { Grid } from  'react-loader-spinner';
+import moment from 'moment';
 const EditCashInOut = ({ editDiaOpen, setEditDiaOpen, id, fetchDataList }) => {
 
     // How to user the fetching detail data and how to update with axios in react I request with id?
@@ -138,11 +139,12 @@ const EditCashInOut = ({ editDiaOpen, setEditDiaOpen, id, fetchDataList }) => {
     const handleSubmit = () => {
         if (validateForm()) {
             setIsLoading(true);
+            const updateDate = dayjs(selectDate).format('YYYY-MM-DDT') + dayjs(selectTime).format('HH:mm:ss');
             axios.put(`${baseUrl}/transaction/edit/${id}`,
                 {
                     ...formData,
                     amount: String(formData.amount),
-                    datetime: dayjs(selectDate).format('YYYY-MM-DDT') + dayjs(selectTime).format('HH:mm:ss')
+                    datetime: moment.utc(moment(updateDate).toISOString())
                 })
                 .then((response) => {
                     console.log('Data update successfully')
@@ -185,7 +187,8 @@ const EditCashInOut = ({ editDiaOpen, setEditDiaOpen, id, fetchDataList }) => {
                         color: (theme) => theme.palette.grey[500],
                     }}
                     onClick={() => {
-                        setEditDiaOpen(!editDiaOpen)
+                        setEditDiaOpen(!editDiaOpen);
+                        resetFormData();
                     }}
                 >
                     <CloseIcon />
